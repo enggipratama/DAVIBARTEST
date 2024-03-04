@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2f1110c2ee81cf80d53db0cdc8394ade935a1cc7
 Untuk tampilannya saya sudah pasang template admin `bootstrap v5` yaitu `sash admin`.
 
 ## *:sparkles: Fitur*
@@ -20,4 +24,10 @@ Untuk tampilannya saya sudah pasang template admin `bootstrap v5` yaitu `sash ad
 * **Yajra Datatables**
 * **SweetAlert**
 * **jQuery**
+<<<<<<< HEAD
 * **Datetime picker**
+=======
+* **Datetime picker**
+
+
+>>>>>>> 2f1110c2ee81cf80d53db0cdc8394ade935a1cc7
