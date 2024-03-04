@@ -59,11 +59,10 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/pesan,menu'])->group(function () {
         Route::get('/admin/pesan', [PesanController::class, 'index']);
-        Route::get('/admin/pesan/show/', [PesanController::class, 'show'])->name('pesan.getpesan');
-        Route::get('/admin/pesan/proses_tambah/', [PesanController::class, 'proses_tambah'])->name('pesan.store');
-        Route::get('/admin/pesan/status/', [PesanController::class, 'status'])->name('pesan.status');
-        Route::get('/admin/pesan/rincian/', [PesanController::class, 'rincian'])->name('pesan.rincian');
-        
+        Route::post('/admin/pesan/detail/{id}', [PesanController::class, 'updateStatus'])->name('update.status');
+        Route::get('/admin/pesan/detail/{id}', [PesanController::class, 'detail'])->name('detailpesan');
+        Route::get('/admin/pesan/status/', [PesanController::class, 'status'])->name('statustransaksi');
+        Route::post('/admin/pesan/addToPesan/',[PesanController::class,'addToPesan'])->name('addPesan');
     });
     
     Route::middleware(['checkRoleUser:/jenisbarang,submenu'])->group(function () {

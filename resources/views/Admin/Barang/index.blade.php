@@ -6,6 +6,7 @@
         <h1 class="page-title">{{ $title }}</h1>
         <div>
             <ol class="breadcrumb">
+                <li class="breadcrumb-item text-gray">Davibar House</li>
                 <li class="breadcrumb-item text-gray">Menu Produk</li>
                 <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
             </ol>
@@ -162,16 +163,16 @@
                         name: 'total_stok',
                         searchable: true,
                         render: function(data, type, row) {
-                            // Tambahkan logika warna teks di sini
                             var color = ''; // Variabel untuk menyimpan warna teks
 
-                            if (data > 0) {
-                                color = 'green'; // Warna hijau jika nilai stok lebih dari 0
-                            } else if (data < 0) {
+                            if (data <= 0) {
                                 color = 'red'; // Warna merah jika nilai stok kurang dari 0
+                                data = 'Stok Kosong'; // Mengganti nilai dengan teks "Stok Kosong"
+                            } else if (data < 100) {
+                                color = 'orange'; // Warna orange jika nilai stok kurang dari 100
                             } else {
-                                color = 'red'; // Warna merah jika nilai stok sama dengan 0
-                                data = 'Kosong'; // Mengganti nilai dengan teks "Stok Kosong"
+                                color =
+                                '#00FF00'; // Warna hijau jika nilai stok lebih dari atau sama dengan 100
                             }
 
                             return '<span style="color:' + color + ';">' + data + '</span>';

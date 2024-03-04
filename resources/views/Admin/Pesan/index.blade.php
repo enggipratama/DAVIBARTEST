@@ -1,13 +1,13 @@
-@extends('Master.Layouts.app', ['title' => $title])
+@extends('Master.Layouts.app', ['title' => $data['title']])
 
 @section('content')
     <!-- PAGE-HEADER -->
     <div class="page-header">
-        <h1 class="page-title">{{ $title }}</h1>
+        <h1 class="page-title">{{ $data['title'] }}</h1>
         <div>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item text-gray">Pesan Produk</li>
-                <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+                <li class="breadcrumb-item text-gray">Davibar House</li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $data['title'] }}</li>
             </ol>
         </div>
     </div>
@@ -15,6 +15,7 @@
 
     <!-- ROW -->
     <div class="row row-sm">
+        <!-- Daftar Produk -->
         <div class="col-lg-7">
             <div class="card">
                 <div class="card-header justify-content-between">
@@ -24,7 +25,6 @@
                     <div class="table-responsive">
                         <table id="table-1" class="table table-bordered text-nowrap border-bottom">
                             <thead>
-                                <th class="border-bottom-0">No</th>
                                 <th class="border-bottom-0">Gambar</th>
                                 <th class="border-bottom-0">Nama</th>
                                 <th class="border-bottom-0">Stok</th>
@@ -33,12 +33,94 @@
                                 <th class="border-bottom-0">Pilih</th>
                             </thead>
                             <tbody>
+                                @foreach ($arr as $product)
+                                    <tr>
+                                        <td class="text-center">
+                                            <a data-bs-effect="effect-super-scaled" data-bs-toggle="modal"
+                                                href="#Gmodaldemo8" onclick="gambar({{ $product['gambar'] }})">
+                                                <span class="avatar avatar-lg cover-image rounded-3"
+                                                    style="background: url({{ $product['gambar'] == 'image.png' ? url('/assets/default/barang/' . $product['gambar']) : asset('storage/barang/' . $product['gambar']) }}) center center; display: inline-block;"></span>
+                                            </a>
+                                        </td>
+                                        <td>{{ $product['nama'] }}</td>
+                                        <td
+                                            style="color: @if ($product['total_stok'] <= 0) red @elseif($product['total_stok'] < 100) orange @else #00FF00 @endif">
+                                            @if ($product['total_stok'] <= 0)
+                                                Stok Kosong
+                                            @else
+                                                {{ $product['total_stok'] }}
+                                            @endif
+                                        </td>
+                                        <td>Rp. {{ number_format($product['harga'], 0) }}</td>
+                                        <td>
+                                            <input type="number" name="quantity" id="quantity_{{ $product['barang_id'] }}"
+                                                value="0" min="1" max="{{ $product['total_stok'] }}"
+                                                data-max-stok="{{ $product['total_stok'] }}"
+                                                onchange="updateAddToCartButton({{ $product['barang_id'] }})"
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                                style="width: 50px;">
+                                        </td>
+                                        <td>
+                                            <div class="d-flex justify-content-center">
+                                                <button class="btn" id="addToCartButton_{{ $product['barang_id'] }}"
+                                                    onclick="addToCart({{ $product['barang_id'] }}, '{{ $product['nama'] }}', {{ $product['harga'] }})"
+                                                    disabled>
+                                                    @if ($product['total_stok'] > 0)
+                                                        Pilih
+                                                    @else
+                                                        Stok Kosong
+                                                    @endif
+                                                </button>
+                                            </div>
+                                        </td>
+
+                                        <script>
+                                            document.addEventListener("DOMContentLoaded", function() {
+                                                // Update button status when the page is loaded
+                                                updateAddToCartButton({{ $product['barang_id'] }});
+                                            });
+
+                                            function updateAddToCartButton(product_id) {
+                                                var quantityInput = document.getElementById('quantity_' + product_id);
+                                                var addToCartButton = document.getElementById('addToCartButton_' + product_id);
+                                                var maxStok = parseInt(quantityInput.getAttribute('data-max-stok'));
+                                                var quantityValue = parseInt(quantityInput.value);
+
+                                                if (quantityValue > maxStok || quantityValue <= 0) {
+                                                    addToCartButton.disabled = true;
+                                                    addToCartButton.innerHTML = 'Input Jumlah';
+                                                    addToCartButton.classList.remove('btn-success', 'btn-danger');
+                                                    addToCartButton.classList.add('btn-primary');
+                                                } else {
+                                                    addToCartButton.disabled = false;
+                                                    addToCartButton.innerHTML = 'Pilih';
+                                                    addToCartButton.classList.remove('btn-primary', 'btn-danger');
+                                                    addToCartButton.classList.add('btn-success');
+                                                }
+                                                if (quantityValue > maxStok) {
+                                                    addToCartButton.disabled = true;
+                                                    addToCartButton.innerHTML = 'Melebihi';
+                                                    addToCartButton.classList.remove('btn-primary', 'btn-success');
+                                                    addToCartButton.classList.add('btn-danger');
+                                                }
+                                                if (maxStok === 0) {
+                                                    addToCartButton.disabled = true;
+                                                    addToCartButton.innerHTML = 'Stok Kosong';
+                                                    addToCartButton.classList.remove('btn-primary', 'btn-success');
+                                                    addToCartButton.classList.add('btn-danger');
+                                                }
+                                            }
+                                        </script>
+
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Rincian Order -->
         <div class="col-lg-5">
             <div class="card">
                 <div class="card-header justify-content-between">
@@ -48,214 +130,214 @@
                     <div class="table-responsive">
                         <table id="rincian-order-table" class="table table-bordered text-nowrap border-bottom">
                             <thead>
-                                <th>Nama</th>
-                                <th>Harga</th>
-                                <th>Jumlah</th>
-                                <th>Pilih</th>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Harga</th>
+                                    <th>Jumlah</th>
+                                    <th>Pilih</th>
+                                </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="cart-items">
+                                <!-- Rincian produk dalam keranjang akan ditampilkan di sini -->
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="card-header justify-content-between">
                     <h3 class="card-title">
-                        <div id="total-harga">Total Harga: Rp. 0</div>
+                        <div id="total-harga">Total Harga: <span style="color: rgb(15, 209, 41);">Rp. 0 </span></div>
                     </h3>
-                    <a class="modal-effect btn btn-primary-light" data-bs-effect="effect-super-scaled"
-                        data-bs-toggle="modal" href="#modaldemo8">Rincian
-                    </a>
+                </div>
+                <div class="card-header justify-content-around">
+                    <button class="btn btn-primary d-none" id="btnLoaderU" type="button" disabled="">
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </button>
+                    <a href="javascript:void(0)" onclick="check()" id="btnSimpanU" class="btn btn-primary">Checkout
+                        <i class="fe fe-check"></i></a>
                 </div>
             </div>
         </div>
-    </div> <!-- END ROW -->
-    @include('Admin.Pesan.tambah')
-@endsection
+        <!-- Modal Rincian Order -->
+        <script>
+            var cartItems = {};
 
-@section('scripts')
-    <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        var table;
-        $(document).ready(function() {
-            //datatables
-            table = $('#table-1').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "info": true,
-                "order": [],
-                "stateSave": true,
-                "scrollX": true,
-                "lengthMenu": [
-                    [5, 10, 25, 50, 100],
-                    [5, 10, 25, 50, 100]
-                ],
-                "pageLength": 5,
-                lengthChange: true,
-                "ajax": {
-                    "url": "{{ route('pesan.getpesan') }}",
-                },
-                "columns": [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        searchable: false,
-                        orderable: false
+            function addToCart(barang_id, barang_nama, barang_harga) {
+                var quantityInput = document.getElementById('quantity_' + barang_id);
+                var quantity = parseInt(quantityInput.value, 10);
+                var maxStok = parseInt(quantityInput.getAttribute('data-max-stok'), 10);
+                var totalHarga = quantity * barang_harga;
 
-                    },
-                    {
-                        data: 'img',
-                        name: 'barang_gambar',
-                        searchable: false,
-                        orderable: false
-                    },
-                    {
-                        data: 'barang_nama',
-                        name: 'barang_nama'
-                    },
-                    {
-                        data: 'totalstok',
-                        name: 'total_stok',
-                        render: function(data, type, row) {
-                            var color = '';
-                            if (data > 0) {
-                                color = 'green';
-                            } else if (data < 0) {
-                                color = 'red';
-                            } else {
-                                color = 'red';
-                                data = 'Kosong';
-                            }
-                            return '<span style="color:' + color + ';">' + data + '</span>';
-                        }
-                    },
-                    {
-                        data: 'currency',
-                        name: 'barang_harga'
-                    },
-                    {
-                        data: 'inputjml',
-                        name: 'inputjml',
-                        searchable: false,
-                        orderable: false,
-                    },
-                    {
-                        searchable: false,
-                        orderable: false,
-                        render: function(data, type, row) {
-                            return '<button class="btn modal-effect text-success btn-sm fa fa-plus-square fs-20 btn-plus"></button>';
-                        },
-                    },
-                ],
-
-            });
-
-            function hitungTotalHarga() {
-                var totalHarga = 0;
-                $('#rincian-order-table tbody tr').each(function() {
-                    var inputVal = parseInt($(this).find('td:nth-last-child(2)').text());
-                    var hargaPerItem = parseFloat($(this).find('td:nth-last-child(3)').text().replace(
-                        /[^0-9.-]+/g, ""));
-                    var subtotal = inputVal * hargaPerItem;
-                    totalHarga += subtotal;
-                });
-                $('#total-harga').text('Total Harga: Rp. ' + formatUang(
-                    totalHarga));
-                $('#total-harga-2').text('Total Harga: Rp. ' + formatUang(
-                    totalHarga));
-            }
-
-            function formatUang(angka) {
-                var formatted = angka.toFixed(2).replace(/\.00$/, '');
-                return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                ribuan
-            }
-            $('#table-1 tbody').on('click', 'button.btn-plus', function() {
-                var data = table.row($(this).parents('tr')).data();
-                var inputVal = $(this).closest('tr').find('input[name="inputjml[]"]').val();
-                var totalStokDiinput = 0;
-                var totalStokTersedia = data.totalstok;
-                if (inputVal.trim() == 0) {
-                    swal({
-                        title: "Masukkan Jumlah Barang!",
-                        type: "error",
-                        button: "OK",
-                    });
-                    return;
-                }
-                if (data.totalstok == 0) {
-                    swal({
-                        title: "Stok Kosong!",
-                        type: "error",
-                        button: "OK",
-                    });
-                    return;
-                }
-                var existingRow = $('#rincian-order-table tbody tr').filter(function() {
-                    return $(this).find('td:first').text() === data.barang_nama;
-                });
-                if (existingRow.length > 0) {
-                    var currentVal = parseInt(existingRow.find('td:nth-last-child(2)').text());
-                    var newTotal = currentVal + parseInt(inputVal);
-                    if (newTotal > totalStokTersedia + totalStokDiinput) {
+                if (cartItems[barang_id]) {
+                    var remainingQuantity = maxStok - cartItems[barang_id].quantity;
+                    if (quantity > remainingQuantity) {
                         swal({
-                            title: "Jumlah Melebihi Total Stok Tersedia!",
-                            type: "error",
-                            button: "OK",
+                            title: 'Melebihi stok yang tersedia',
+                            text: 'Stok yang tersedia: ' + remainingQuantity,
+                            type: "warning",
                         });
                         return;
                     }
-                    existingRow.find('td:nth-last-child(2)').text(newTotal);
-                    existingRow.find('td:last').html(
-                        '<button class="btn btn-danger btn-hapus fa fa-trash"></button>'
-                    );
-                    swal({
-                        title: "Item Diperbarui!",
-                        text: "Jumlah " + data.barang_nama + " telah diperbarui.",
-                        type: "success",
-                        button: "OK",
-                    });
+                    cartItems[barang_id].quantity += quantity;
                 } else {
+                    cartItems[barang_id] = {
+                        nama: barang_nama,
+                        harga: barang_harga,
+                        quantity: quantity,
+                    };
                     swal({
-                        title: "Item Ditambahkan!",
-                        text: data.barang_nama + " telah ditambahkan ke pesanan.",
+                        title: 'Produk ditambahkan',
+                        text: 'Nama: ' + barang_nama + '\nJumlah: ' + quantity,
                         type: "success",
-                        button: "OK",
                     });
-                    if (parseInt(inputVal) > totalStokTersedia + totalStokDiinput) {
-                        swal({
-                            title: "Jumlah Melebihi Total Stok Tersedia!",
-                            type: "error",
-                            button: "OK",
-                        });
-                        return;
-                    }
-                    var newRow =
-                        '<tr>' +
-                        '<td>' + data.barang_nama + '</td>' +
-                        '<td>' + data.currency + '</td>' +
-                        '<td>' + inputVal + '</td>' +
-                        '<td><button class="btn btn-danger btn-hapus fa fa-trash"></button></td>' +
-                        '</tr>';
-                    var rincianRow =
-                        '<tr>' +
-                        '<td>' + data.barang_nama + '</td>' +
-                        '<td>' + data.currency + '</td>' +
-                        '<td>' + inputVal + '</td>' +
-                        '</tr>';
-                    totalStokDiinput += parseInt(inputVal);
-                    $('#rincian-order-table tbody').append(newRow);
-                    $('#rincian-order-table-2 tbody').append(rincianRow);
-                    hitungTotalHarga();
                 }
-                $('#rincian-order-table tbody').on('click', 'button.btn-hapus', function() {
-                    $(this).closest('tr').remove();
-                    hitungTotalHarga();
+                var newTotalHarga = Object.values(cartItems).reduce(function(total, item) {
+                    return total + item.quantity * item.harga;
+                }, 0);
+                updateCartView();
+                var totalHargaElement = document.getElementById('total-harga');
+                totalHargaElement.innerHTML = 'Total Harga: <span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga.toLocaleString() + '</span>';
+            }
+
+            function numberFormat(angka) {
+                return 'Rp. ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            function updateCartView() {
+                var cartItemsHTML = '';
+                for (var itemId in cartItems) {
+                    var item = cartItems[itemId];
+                    var formattedHarga = numberFormat(item.harga);
+                    cartItemsHTML += `<tr>
+                            <td>${item.nama}</td>
+                            <td>${formattedHarga}</td>
+                            <td>${item.quantity}</td>
+                            <td class="d-flex justify-content-center">
+                                <button class="btn btn-danger fa fa-trash" onclick="removeFromCart(this, ${itemId}, ${item.quantity * item.harga})"></button>
+                            </td>
+                        </tr>`;
+                }
+                document.getElementById('cart-items').innerHTML = cartItemsHTML;
+            }
+
+            function removeFromCart(button, barang_id, totalHarga) {
+                var row = button.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                var totalHargaSebelumnya = Object.values(cartItems).reduce(function(total, item) {
+                    return total + item.quantity * item.harga;
+                }, 0);
+                var newTotalHarga = totalHargaSebelumnya - totalHarga;
+                newTotalHarga = Math.max(0, newTotalHarga);
+                var totalHargaElement = document.getElementById('total-harga');
+                totalHargaElement.innerHTML = 'Total Harga: <span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga.toLocaleString() + '</span>';
+                delete cartItems[barang_id];
+                updateCartView();
+            }
+
+            function check() {
+                setLoadingH(true);
+                var cartItems = $("#rincian-order-table tbody#cart-items tr").map(function() {
+                    var rowData = $(this).find('td').map(function() {
+                        return $(this).text().trim();
+                    }).get();
+                    return rowData;
+                }).get();
+
+                if (cartItems.length === 0 || cartItems.every(item => Object.values(item).every(val => val === ""))) {
+                    validasi();
+                    setLoadingH(false);
+                    return false;
+                } else {
+                    confirmCheckout();
+                }
+            }
+
+            function confirmCheckout() {
+                swal({
+                    title: "Pesan Sekarang?",
+                    type: "warning",
+                    confirmButtonText: 'Pesan',
+                    showCancelButton: true,
+                    cancelButtonText: 'Batal'
+                }, function(isConfirmed) {
+                    if (isConfirmed) {
+                        addToPesan();
+                    } else {
+                        setLoadingH(false);
+                    }
                 });
-                hitungTotalHarga();
+            }
+
+            function addToPesan() {
+                // Menggunakan jQuery untuk mendapatkan data dari tabel
+                const tableData = [];
+                var fd = new FormData();
+
+                for (var itemId in cartItems) {
+                    var item = cartItems[itemId];
+                    tableData.push([item.quantity, itemId]);
+                }
+
+                fd.append('_token', '{{ csrf_token() }}');
+                fd.append('data', tableData);
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('addPesan') }}",
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    data: fd,
+                    success: function(response) {
+                        window.location.href = "{{ route('statustransaksi') }}";
+                    },
+                    error: function(error) {
+                        n
+                        console.error(error);
+                    }
+                });
+            }
+
+            function setLoadingH(bool) {
+                if (bool) {
+                    $('#btnLoaderU').removeClass('d-none');
+                    $('#btnSimpanU').addClass('d-none');
+                } else {
+                    $('#btnSimpanU').removeClass('d-none');
+                    $('#btnLoaderU').addClass('d-none');
+                }
+            }
+
+            function validasi(message, type) {
+                swal({
+                    title: "Item Order Kosong",
+                    type: "warning"
+                });
+            }
+        </script>
+    @endsection
+
+    @section('scripts')
+        <style>
+            #table-1_filter input {
+                width: 150px !important;
+            }
+        </style>
+        <script>
+            $(document).ready(function() {
+                $('#table-1').DataTable({
+                    "paging": true,
+                    "scrollX": true,
+                    "searching": true,
+                    "info": true,
+                    "autoWidth": false,
+                    "lengthMenu": [
+                        [5, 10, 25, 50, 100],
+                        [5, 10, 25, 50, 100]
+                    ],
+                    "pageLength": 5,
+                    lengthChange: true,
+                });
             });
-        });
-    </script>
-@endsection
+        </script>
+    @endsection

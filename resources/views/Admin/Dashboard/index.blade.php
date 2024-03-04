@@ -4,11 +4,11 @@
 @section('content')
     <!-- PAGE-HEADER -->
     <div class="page-header">
-        <h1 class="page-title">Dashbord</h1>
+        <h1 class="page-title">{{ $data['title'] }}</h1>
         <div>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item text-gray">Davibar</li>
-                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                <li class="breadcrumb-item text-gray">Davibar House</li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $data['title'] }}</li>
             </ol>
         </div>
     </div>
@@ -82,10 +82,10 @@
 
                         <h5 class="text-white mt-2 text-center"><b>{{ $item['nama'] }}</b></h5>
 
-                        <h5 class="text-white mt-2 text-center"> Stok : {{ $item['total_stok'] }} - {{ $item['satuan'] }}
+                        <h5 class="text-white mt-2 text-center"> Stok : {{ $item['total_stok'] }} {{ $item['satuan'] }}
                         </h5>
                         <p class="text-white mb-2 mt-2 text-center">Rp.
-                            {{ number_format($item['harga'], 0, ',', '.') }}</p>
+                            {{ number_format($item['harga'], 0) }}</p>
                         <div class="col-lg-12 text-center">
                             <a href="{{ url('admin/pesan') }}" class="btn btn-success text-center">PESAN</a>
                         </div>

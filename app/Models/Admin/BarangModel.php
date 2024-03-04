@@ -31,4 +31,8 @@ class BarangModel extends Model
     public function satuan(){
         return $this->hasOne(SatuanModel::class,'satuan_id','satuan_id');
     }
+
+    public function pesan(){
+        return $this->belongsTo(PesanModel::class);
+    }
 }

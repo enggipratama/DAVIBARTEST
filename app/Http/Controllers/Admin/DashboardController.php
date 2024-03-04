@@ -22,9 +22,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $data["card"] = BarangModel::latest('satuan_id')->paginate(8);
         $data["title"] = "Dashboard";
-        
         $data["jenis"] = JenisBarangModel::orderBy('jenisbarang_id', 'DESC')->count();
         $data["satuan"] = SatuanModel::orderBy('satuan_id', 'DESC')->count();
         $data["merk"] = MerkModel::orderBy('merk_id', 'DESC')->count();
