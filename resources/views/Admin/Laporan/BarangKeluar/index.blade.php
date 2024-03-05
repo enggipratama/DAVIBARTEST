@@ -26,27 +26,21 @@
                         <div class="col-12">
                             <label for="" class="fw-bold">Filter Tanggal</label>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group">
-                                <input type="text" name="tglawal" class="form-control datepicker-date"
-                                    placeholder="Tanggal Awal">
+                                <input type="text" name="tglawal" class="form-control datepicker-date" placeholder="Tanggal Awal">
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group">
-                                <input type="text" name="tglakhir" class="form-control datepicker-date"
-                                    placeholder="Tanggal Akhir">
+                                <input type="text" name="tglakhir" class="form-control datepicker-date" placeholder="Tanggal Akhir">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-success-light" onclick="filter()"><i class="fe fe-filter"></i>
-                                Filter</button>
-                            <button class="btn btn-secondary-light" onclick="reset()"><i class="fe fe-refresh-ccw"></i>
-                                Reset</button>
-                            <button class="btn btn-primary-light" onclick="print()"><i class="fe fe-printer"></i>
-                                Print</button>
-                            <button class="btn btn-danger-light" onclick="pdf()"><i class="fa fa-file-pdf-o"></i>
-                                PDF</button>
+                        <div class="col-md-4 text-center ">
+                            <button class="btn btn-success-light mx-2 text-center" onclick="filter()"><i class="fe fe-filter"></i></button>
+                            <button class="btn btn-secondary-light mx-2 text-center" onclick="reset()"><i class="fe fe-refresh-ccw"></i></button>
+                            <button class="btn btn-primary-light mx-2 text-center" onclick="print()"><i class="fe fe-printer"></i></button>
+                            <button class="btn btn-danger-light mx-2 text-center" onclick="pdf()"><i class="fa fa-file-pdf-o"></i></button>
                         </div>
                     </div>
                     <div class="table-responsive">

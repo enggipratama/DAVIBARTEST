@@ -52,7 +52,7 @@
                                                     @if ($product['total_stok'] <= 0)
                                                         Stok Kosong
                                                     @else
-                                                        {{ $product['total_stok'] }}
+                                                        {{ $product['total_stok'] }} {{ $product['satuan'] }}
                                                     @endif
                                                 </span>
                                             </div>
