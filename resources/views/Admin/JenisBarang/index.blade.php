@@ -90,6 +90,7 @@
                 "serverSide": true,
                 "info": true,
                 "stateSave": true,
+                "scrollX": true,
                 "order": [],
                 "lengthMenu": [
                     [5, 10, 25, 50, 100],

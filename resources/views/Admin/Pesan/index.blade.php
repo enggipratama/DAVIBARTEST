@@ -46,13 +46,13 @@
                                         <td>
                                             <div class="d-flex justify-content-center">
                                                 <span
-                                                    class="badge @if ($product['total_stok'] <= 0) bg-danger
-                                                        @elseif($product['total_stok'] < 100) bg-success 
+                                                    class="badge @if ($product['total_real'] <= 0) bg-danger
+                                                        @elseif($product['total_real'] < 100) bg-success 
                                                         @else bg-info @endif badge-sm  me-1 mb-1 mt-1">
-                                                    @if ($product['total_stok'] <= 0)
+                                                    @if ($product['total_real'] <= 0)
                                                         Stok Kosong
                                                     @else
-                                                        {{ $product['total_stok'] }} {{ $product['satuan'] }}
+                                                        {{ $product['total_real'] }} {{ $product['satuan'] }}
                                                     @endif
                                                 </span>
                                             </div>

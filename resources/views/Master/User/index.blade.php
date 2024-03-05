@@ -92,6 +92,7 @@
 
             "processing": true,
             "serverSide": true,
+            "scrollX": true,
             "info": true,
             "order": [],
             "lengthMenu": [

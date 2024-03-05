@@ -107,50 +107,18 @@ use Carbon\Carbon;
             </tr>
         </thead>
         <tbody>
-            @php
-                $totalStokRPTotal = 0;
-            @endphp
             @php $no=1; @endphp
-            @foreach ($data as $d)
-                <?php
-                if ($tglawal == '') {
-                    $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')
-                        ->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')
-                        ->where('tbl_barangmasuk.barang_kode', '=', $d->barang_kode)
-                        ->sum('tbl_barangmasuk.bm_jumlah');
-                } else {
-                    $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')
-                        ->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')
-                        ->where('tbl_barangmasuk.barang_kode', '=', $d->barang_kode)
-                        ->whereBetween('bm_tanggal', [$tglawal, $tglakhir])
-                        ->sum('tbl_barangmasuk.bm_jumlah');
-                }
-                
-                if ($tglawal != '') {
-                    $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')
-                        ->whereBetween('bk_tanggal', [$tglawal, $tglakhir])
-                        ->where('tbl_barangkeluar.barang_kode', '=', $d->barang_kode)
-                        ->sum('tbl_barangkeluar.bk_jumlah');
-                } else {
-                    $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')
-                        ->where('tbl_barangkeluar.barang_kode', '=', $d->barang_kode)
-                        ->sum('tbl_barangkeluar.bk_jumlah');
-                }
-                
-                $totalStok = $d->barang_stok + ($jmlmasuk - $jmlkeluar);
-                $totalStokRP = $d->barang_harga * $totalStok;
-                $totalStokRPTotal += $totalStokRP;
-                ?>
+            @foreach ($stokData as $d)
                 <tr>
                     <td align="center">{{ $no++ }}</td>
-                    <td>{{ $d->barang_kode }}</td>
-                    <td>{{ $d->barang_nama }}</td>
-                    <td align="center">{{ $d->barang_stok }}</td>
-                    <td align="center">{{ $jmlmasuk }}</td>
-                    <td align="center">{{ $jmlkeluar }}</td>
-                    <td align="center">{{ $totalStok }}</td>
-                    <td>Rp. {{ number_format($d->barang_harga, 0, ',', '.') }} / {{ $d->satuan->satuan_nama }}</td>
-                    <td>Rp. {{ number_format($totalStokRP, 0, ',', '.') }}</td>
+                    <td>{{ $d['barang_kode'] }}</td>
+                    <td>{{ $d['barang_nama']}}</td>
+                    <td align="center">{{ $d['barang_stok'] }}</td>
+                    <td align="center">{{ $d['jmlmasuk'] }}</td>
+                    <td align="center">{{ $d['jmlkeluar'] }}</td>
+                    <td align="center">{{ $d['totalreal'] }}</td>
+                    <td>Rp. {{ number_format($d['barang_harga'], 0, ',', '.') }} / {{ $d['satuan'] }}</td>
+                    <td>Rp. {{ number_format($d['totalStokRP'], 0, ',', '.') }}</td>
                 </tr>
             @endforeach
             <!-- ... Kolom total ... -->

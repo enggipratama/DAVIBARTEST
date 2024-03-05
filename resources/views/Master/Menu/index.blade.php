@@ -29,7 +29,7 @@ use App\Models\Admin\SubmenuModel;
                     <a class="modal-effect btn btn-primary-light" data-bs-effect="effect-super-scaled" data-bs-toggle="modal" href="#modaldemo8">Tambah Data <i class="fe fe-plus"></i></a>
                 </div>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table border text-nowrap text-md-nowrap table-bordered mb-0">
                         <thead>

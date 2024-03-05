@@ -80,7 +80,7 @@
                 "info": false,
                 "order": [],
                 "ordering": false,
-                "scrollX": false,
+                "scrollX": true,
                 // "lengthMenu": [
                 //     [5, 10, 25, 50, 100],
                 //     [5, 10, 25, 50, 100]

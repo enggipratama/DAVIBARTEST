@@ -92,6 +92,7 @@
                 "info": true,
                 "order": [],
                 "stateSave": true,
+                "scrollX": true,
                 "lengthMenu": [
                     [5, 10, 25, 50, 100],
                     [5, 10, 25, 50, 100]

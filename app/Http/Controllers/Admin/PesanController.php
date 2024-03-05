@@ -29,16 +29,37 @@ class PesanController extends Controller
         $arr = [];
         foreach ($dataBarang as $dbarang) {
             $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')->where('tbl_barangmasuk.barang_kode', '=', $dbarang->barang_kode)->sum('tbl_barangmasuk.bm_jumlah');
-
+    
             $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->where('tbl_barangkeluar.barang_kode', '=', $dbarang->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
+    
+            $totalpesan = PesanModel::where('pesan_idbarang', $dbarang->barang_id)
+                ->join('tbl_status_order', 'tbl_status_order.id', '=', 'pesan_idtransaksi')
+                ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
+                ->sum('pesan_jumlah');
+    
+            $totalstatus = StatusOrderModel::with('pesan')
+                ->whereHas('pesan', function ($query) use ($dbarang) {
+                    $query->where('pesan_idbarang', $dbarang->barang_id);
+                })
+                ->whereIn('status', ['Dikirim', 'Selesai'])
+                ->first();
+    
+            $totalstok = $dbarang->barang_stok + ($jmlmasuk - $jmlkeluar);
+    
+            if ($totalstatus) {
+                $totalreal = $totalstok - $totalpesan;
+            } else {
+                $totalreal = $totalstok - 0;
+            }
+    
             $arr[] = [
                 'barang_id' => $dbarang->barang_id,
                 'gambar' => $dbarang->barang_gambar,
                 'nama' => $dbarang->barang_nama,
                 'harga' => $dbarang->barang_harga,
                 'satuan' => $dbarang->satuan->satuan_nama,
-                'total_stok' => $dbarang->barang_stok + ($jmlmasuk - $jmlkeluar),
-                
+                'total_stok' => $totalstok,
+                'total_real' => $totalreal
             ];
         }
         return view('Admin.Pesan.index', ['data' => $data, 'arr' => $arr]);
@@ -104,8 +125,6 @@ class PesanController extends Controller
                 'kode_pesan' => $dt->kode_inv
             ];
         }
-
-        // dd($arr);
 
         return view ('Admin.Pesan.statustransaksi', ['data' => $data, 'arr' => $arr, 'title' => $data['title']]);
     }
