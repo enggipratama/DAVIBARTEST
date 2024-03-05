@@ -67,12 +67,12 @@
             <div class="col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex align-items-center justify-content-center">
                 <div class="card bg-primary img-card" style="width: 15rem;">
                     <span
-                        class="position-absolute top-0 start-100 translate-middle badge @if ($item['total_stok'] <= 0) bg-danger
-                        @elseif($item['total_stok'] < 100) bg-warning  @else bg-success @endif">
-                        @if ($item['total_stok'] <= 0)
+                        class="position-absolute top-0 start-100 translate-middle badge @if ($item['total_real'] <= 0) bg-danger
+                        @elseif($item['total_real'] < 100) bg-warning  @else bg-success @endif">
+                        @if ($item['total_real'] <= 0)
                             Kosong
                         @else
-                            {{ $item['total_stok'] }}++
+                            {{ $item['total_real'] }}++
                         @endif
                     </span>
                     <div class="card-body" style="width: 15rem; height: auto; overflow: hidden;">

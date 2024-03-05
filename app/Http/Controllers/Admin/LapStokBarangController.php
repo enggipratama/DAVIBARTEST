@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\BarangkeluarModel;
 use App\Models\Admin\BarangmasukModel;
 use App\Models\Admin\BarangModel;
+use App\Models\Admin\PesanModel;
 use App\Models\Admin\WebModel;
+use App\Models\StatusOrderModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use PDF;
@@ -58,7 +60,7 @@ class LapStokBarangController extends Controller
                     
                     if($row->barang_stok <= 0){
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$row->barang_stok.'</span></div>';
-                    }else if($row->barang_stok > 100){
+                    }elseif ($row->barang_stok > 100){
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$row->barang_stok.'</span></div>';
                     }else{
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$row->barang_stok.'</span></div>';
@@ -71,10 +73,9 @@ class LapStokBarangController extends Controller
                     } else {
                         $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')->whereBetween('bm_tanggal', [$request->tglawal, $request->tglakhir])->where('tbl_barangmasuk.barang_kode', '=', $row->barang_kode)->sum('tbl_barangmasuk.bm_jumlah');
                     }
-
                     if($jmlmasuk <= 0){
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$jmlmasuk.'</span></div>';
-                    }else if($jmlmasuk > 100){
+                    }elseif ($jmlmasuk > 100){
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$jmlmasuk.'</span></div>';
                     }else{
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$jmlmasuk.'</span></div>';
@@ -87,10 +88,9 @@ class LapStokBarangController extends Controller
                     } else {
                         $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
                     }
-
                     if($jmlkeluar <= 0){
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
-                    }else if($jmlkeluar > 100){
+                    }elseif ($jmlkeluar > 100){
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
                     }else{
                         $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
@@ -111,14 +111,31 @@ class LapStokBarangController extends Controller
                         $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
                     }
 
-                    $totalstok = $row->barang_stok + ($jmlmasuk - $jmlkeluar);
-                    if($totalstok < 0){
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$totalstok.'</span></div>';
-                    }else if($totalstok > 100){
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$totalstok.'</span></div>';
-                    }else{
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$totalstok.'</span></div>';
-                    }
+                    $totalpesan = PesanModel::where('pesan_idbarang', $row->barang_id)
+                    ->join('tbl_status_order', 'tbl_status_order.id', '=', 'pesan_idtransaksi')
+                    ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
+                    ->sum('pesan_jumlah');
+
+                    $totalstatus = StatusOrderModel::with('pesan')
+                        ->whereHas('pesan', function ($query) use ($row) {
+                            $query->where('pesan_idbarang', $row->barang_id);
+                        })
+                        ->whereIn('status', ['Dikirim', 'Selesai'])
+                        ->first();
+                        $totalstok = $row->barang_stok + ($jmlmasuk - $jmlkeluar);
+
+                        if ($totalstatus) {
+                            $totalreal = $totalstok - $totalpesan;
+                        } else {
+                            $totalreal = $totalstok - 0;
+                        }
+                        if($totalreal <= 0){
+                            $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$totalreal.'</span></div>';
+                        }elseif ($totalreal > 100){
+                            $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$totalreal.'</span></div>';
+                        }else{
+                            $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$totalreal.'</span></div>';
+                        }
                     
                     return $result;
                 })
