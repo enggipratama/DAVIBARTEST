@@ -119,6 +119,11 @@
                     <h3 class="card-title">
                         <div id="total-harga">Total Harga: Rp. {{ number_format($totalHarga, 0) }}</div>
                     </h3>
+                    <div class="d-flex justify-content-center">
+                        <span id="statusBadge" class="badge bg-warning badge-sm me-1 mb-1 mt-1">
+                            {{ $results->first()['status'] }}
+                        </span>
+                    </div>
                 </div>
                 <div class="card-header justify-content-between">
                     <a href="" class="btn btn-success"> Print Invoice</a>
@@ -146,9 +151,6 @@
                                 <a href="javascript:void(0)" onclick="confirm()" id="btnSimpanU"
                                     class="btn btn-primary">Update</a>
                             </div>
-                            {{-- <div class="ms-1">
-                                <button type="submit" onclick="confirm()" class="btn btn-primary">Update</button>
-                            </div> --}}
                         </div>
                     @endif
                 </div>
@@ -189,6 +191,7 @@
                     });
                 });
         }
+        updateStatus()
     }
 
     function confirm() {
@@ -217,4 +220,36 @@
             $('#btnLoaderU').addClass('d-none');
         }
     }
+
+    function updateStatus() {
+    // Lakukan permintaan AJAX ke server untuk mendapatkan status terbaru
+    $.ajax({
+        url: '{{ route('update.status', ['id' => $results->first()->kode_inv]) }}', // Ganti dengan URL sesuai kebutuhan Anda
+        method: 'GET',
+        success: function(response) {
+            // Ambil status dari respons server
+            var newStatus = document.querySelector('select[name="status"]').value;
+
+            // Cetak nilai status ke konsol untuk pemantauan
+            console.log("Current status:", newStatus);
+
+            // Memperbarui status badge
+            $('#statusBadge').removeClass().addClass('badge badge-sm me-1 mb-1 mt-1');
+
+            if (newStatus == 'Pending') {
+                $('#statusBadge').addClass(' bg-warning ').text(newStatus);
+            } else if (newStatus == 'Dikirim') {
+                $('#statusBadge').addClass(' bg-success ').text(newStatus);
+            } else if (newStatus == 'Dibatalkan') {
+                $('#statusBadge').addClass(' bg-danger ').text(newStatus);
+            } else if (newStatus == 'Selesai') {
+                $('#statusBadge').addClass(' bg-primary ').text(newStatus);
+            }
+        },
+        error: function(error) {
+            console.error("Error fetching status:", error);
+        }
+    });
+}
+
 </script>

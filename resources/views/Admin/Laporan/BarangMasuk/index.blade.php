@@ -115,10 +115,18 @@
                 {
                     data: 'bm_kode',
                     name: 'bm_kode',
+                    render: function(data, type, row) {
+                            data = '<span style="color: rgb(15, 209, 41);">' + data + '</span>';
+                            return data;
+                        }
                 },
                 {
                     data: 'barang_kode',
                     name: 'barang_kode',
+                    render: function(data, type, row) {
+                            data = '<span style="color: rgb(15, 209, 41);">' + data + '</span>';
+                            return data;
+                        }
                 },
                 {
                     data: 'customer',
@@ -129,9 +137,26 @@
                     name: 'barang_nama',
                 },
                 {
-                    data: 'bm_jumlah',
-                    name: 'bm_jumlah',
-                },
+                        data: 'bm_jumlah',
+                        name: 'bm_jumlah',
+                        searchable: true,
+                        render: function(data, type, row) {
+                            if (data <= 0) {
+                                data =
+                                    '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">' +
+                                    data + '</span></div>';
+                            } else if (data < 100) {
+                                data =
+                                    '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">' +
+                                    data + '</span></div>';
+                            } else {
+                                data =
+                                    '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">' +
+                                    data + '</span></div>';
+                            }
+                            return data;
+                        }
+                    },
             ],
 
         });

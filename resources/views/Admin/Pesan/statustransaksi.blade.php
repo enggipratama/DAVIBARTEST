@@ -47,14 +47,13 @@
                                             <td><span style="color: rgb(15, 209, 41);">{{ $a['kode_pesan'] }}</span></td>
                                             <td>
                                                 <div class="d-flex justify-content-center">
-                                                    <button
-                                                        class="btn @if ($a['status'] == 'Pending') btn-warning 
-                                                                @elseif($a['status'] == 'Dikirim') btn-success 
-                                                                @elseif($a['status'] == 'Dibatalkan') btn-danger 
-                                                                @elseif($a['status'] == 'Selesai') btn-primary @endif"
-                                                        disabled>
+                                                    <span
+                                                        class="badge @if ($a['status'] == 'Pending') bg-warning 
+                                                                @elseif($a['status'] == 'Dikirim') bg-success 
+                                                                @elseif($a['status'] == 'Dibatalkan') bg-danger 
+                                                                @elseif($a['status'] == 'Selesai') bg-primary @endif badge-sm  me-1 mb-1 mt-1">
                                                         {{ $a['status'] }}
-                                                    </button>
+                                                    </span>
                                                 </div>
                                             </td>
                                             <td>

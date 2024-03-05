@@ -60,8 +60,9 @@
 
     <script>
         function generateID() {
-            id = new Date().getTime();
-            $("input[name='kode']").val("BRG-" + id);
+            var id = new Date().getTime().toString();
+            var generatedID = "BRG-" + id.substr(-8);
+            $("input[name='kode']").val(generatedID);
         }
 
         function update(data) {
@@ -141,6 +142,10 @@
                     {
                         data: 'barang_kode',
                         name: 'barang_kode',
+                        render: function(data, type, row) {
+                            data = '<span style="color: rgb(15, 209, 41);">' + data + '</span>';
+                            return data;
+                        }
                     },
                     {
                         data: 'barang_nama',
@@ -163,19 +168,19 @@
                         name: 'total_stok',
                         searchable: true,
                         render: function(data, type, row) {
-                            var color = ''; // Variabel untuk menyimpan warna teks
-
                             if (data <= 0) {
-                                color = 'red'; // Warna merah jika nilai stok kurang dari 0
-                                data = 'Stok Kosong'; // Mengganti nilai dengan teks "Stok Kosong"
+                                data =
+                                    '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">Stok Kosong</span></div>';
                             } else if (data < 100) {
-                                color = 'orange'; // Warna orange jika nilai stok kurang dari 100
+                                data =
+                                    '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">' +
+                                    data + '</span></div>';
                             } else {
-                                color =
-                                '#00FF00'; // Warna hijau jika nilai stok lebih dari atau sama dengan 100
+                                data =
+                                    '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">' +
+                                    data + '</span></div>';
                             }
-
-                            return '<span style="color:' + color + ';">' + data + '</span>';
+                            return data;
                         }
                     },
                     {

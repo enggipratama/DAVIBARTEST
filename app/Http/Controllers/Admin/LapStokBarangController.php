@@ -55,8 +55,14 @@ class LapStokBarangController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('stokawal', function ($row) {
-                    $result = '<span class="">'.$row->barang_stok.'</span>';
-
+                    
+                    if($row->barang_stok <= 0){
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$row->barang_stok.'</span></div>';
+                    }else if($row->barang_stok > 100){
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$row->barang_stok.'</span></div>';
+                    }else{
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$row->barang_stok.'</span></div>';
+                    }
                     return $result;
                 })
                 ->addColumn('jmlmasuk', function ($row) use ($request) {
@@ -66,8 +72,13 @@ class LapStokBarangController extends Controller
                         $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')->whereBetween('bm_tanggal', [$request->tglawal, $request->tglakhir])->where('tbl_barangmasuk.barang_kode', '=', $row->barang_kode)->sum('tbl_barangmasuk.bm_jumlah');
                     }
 
-                    $result = '<span class="">'.$jmlmasuk.'</span>';
-
+                    if($jmlmasuk <= 0){
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$jmlmasuk.'</span></div>';
+                    }else if($jmlmasuk > 100){
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$jmlmasuk.'</span></div>';
+                    }else{
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$jmlmasuk.'</span></div>';
+                    }
                     return $result;
                 })
                 ->addColumn('jmlkeluar', function ($row) use ($request) {
@@ -77,8 +88,13 @@ class LapStokBarangController extends Controller
                         $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
                     }
 
-                    $result = '<span class="">'.$jmlkeluar.'</span>';
-
+                    if($jmlkeluar <= 0){
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
+                    }else if($jmlkeluar > 100){
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
+                    }else{
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
+                    }
                     return $result;
                 })
                 ->addColumn('totalstok', function ($row) use ($request) {
@@ -96,15 +112,14 @@ class LapStokBarangController extends Controller
                     }
 
                     $totalstok = $row->barang_stok + ($jmlmasuk - $jmlkeluar);
-                    if($totalstok == 0){
-                        $result = '<span class="">'.$totalstok.'</span>';
-                    }else if($totalstok > 0){
-                        $result = '<span class="text-success">'.$totalstok.'</span>';
+                    if($totalstok < 0){
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$totalstok.'</span></div>';
+                    }else if($totalstok > 100){
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$totalstok.'</span></div>';
                     }else{
-                        $result = '<span class="text-danger">'.$totalstok.'</span>';
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$totalstok.'</span></div>';
                     }
                     
-
                     return $result;
                 })
                 ->rawColumns(['stokawal', 'jmlmasuk', 'jmlkeluar', 'totalstok'])->make(true);

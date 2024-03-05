@@ -58,8 +58,9 @@
 
     <script>
         function generateID() {
-            id = new Date().getTime();
-            $("input[name='bmkode']").val("BM-" + id);
+            var id = new Date().getTime().toString();
+            var generatedID = "BM-" + id.substr(-8);
+            $("input[name='bmkode']").val(generatedID);
         }
 
         function update(data) {
@@ -135,10 +136,18 @@
                     {
                         data: 'bm_kode',
                         name: 'bm_kode',
+                        render: function(data, type, row) {
+                            data = '<span style="color: rgb(15, 209, 41);">' + data + '</span>';
+                            return data;
+                        }
                     },
                     {
                         data: 'barang_kode',
                         name: 'barang_kode',
+                        render: function(data, type, row) {
+                            data = '<span style="color: rgb(15, 209, 41);">' + data + '</span>';
+                            return data;
+                        }
                     },
                     {
                         data: 'customer',

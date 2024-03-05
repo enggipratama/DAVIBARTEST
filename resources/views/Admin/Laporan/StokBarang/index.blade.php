@@ -117,6 +117,10 @@
                     {
                         data: 'barang_kode',
                         name: 'barang_kode',
+                        render: function(data, type, row) {
+                            data = '<span style="color: rgb(15, 209, 41);">' + data + '</span>';
+                            return data;
+                        }
                     },
                     {
                         data: 'barang_nama',

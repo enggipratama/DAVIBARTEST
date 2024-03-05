@@ -43,13 +43,19 @@
                                             </a>
                                         </td>
                                         <td>{{ $product['nama'] }}</td>
-                                        <td
-                                            style="color: @if ($product['total_stok'] <= 0) red @elseif($product['total_stok'] < 100) orange @else #00FF00 @endif">
-                                            @if ($product['total_stok'] <= 0)
-                                                Stok Kosong
-                                            @else
-                                                {{ $product['total_stok'] }}
-                                            @endif
+                                        <td>
+                                            <div class="d-flex justify-content-center">
+                                                <span
+                                                    class="badge @if ($product['total_stok'] <= 0) bg-danger
+                                                        @elseif($product['total_stok'] < 100) bg-success 
+                                                        @else bg-info @endif badge-sm  me-1 mb-1 mt-1">
+                                                    @if ($product['total_stok'] <= 0)
+                                                        Stok Kosong
+                                                    @else
+                                                        {{ $product['total_stok'] }}
+                                                    @endif
+                                                </span>
+                                            </div>
                                         </td>
                                         <td>Rp. {{ number_format($product['harga'], 0) }}</td>
                                         <td>
@@ -62,21 +68,19 @@
                                         </td>
                                         <td>
                                             <div class="d-flex justify-content-center">
-                                                <button class="btn" id="addToCartButton_{{ $product['barang_id'] }}"
-                                                    onclick="addToCart({{ $product['barang_id'] }}, '{{ $product['nama'] }}', {{ $product['harga'] }})"
-                                                    disabled>
-                                                    @if ($product['total_stok'] > 0)
-                                                        Pilih
-                                                    @else
+                                                @if ($product['total_stok'] > 0)
+                                                    <button class="btn" id="addToCartButton_{{ $product['barang_id'] }}"
+                                                        onclick="addToCart({{ $product['barang_id'] }}, '{{ $product['nama'] }}', {{ $product['harga'] }})"
+                                                        disabled>Pilih</button>
+                                                @else
+                                                    <span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">
                                                         Stok Kosong
-                                                    @endif
-                                                </button>
+                                                    </span>
+                                                @endif
                                             </div>
                                         </td>
-
                                         <script>
                                             document.addEventListener("DOMContentLoaded", function() {
-                                                // Update button status when the page is loaded
                                                 updateAddToCartButton({{ $product['barang_id'] }});
                                             });
 
@@ -196,7 +200,8 @@
                 }, 0);
                 updateCartView();
                 var totalHargaElement = document.getElementById('total-harga');
-                totalHargaElement.innerHTML = 'Total Harga: <span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga.toLocaleString() + '</span>';
+                totalHargaElement.innerHTML = 'Total Harga: <span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga
+                    .toLocaleString() + '</span>';
             }
 
             function numberFormat(angka) {
@@ -229,7 +234,8 @@
                 var newTotalHarga = totalHargaSebelumnya - totalHarga;
                 newTotalHarga = Math.max(0, newTotalHarga);
                 var totalHargaElement = document.getElementById('total-harga');
-                totalHargaElement.innerHTML = 'Total Harga: <span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga.toLocaleString() + '</span>';
+                totalHargaElement.innerHTML = 'Total Harga: <span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga
+                    .toLocaleString() + '</span>';
                 delete cartItems[barang_id];
                 updateCartView();
             }
