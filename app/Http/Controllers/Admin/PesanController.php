@@ -162,5 +162,24 @@ class PesanController extends Controller
             $results->update(['status' => $newStatus]);
             return response()->json(['message' => 'Status berhasil diperbarui']);
         }
+
+        public function cetakStruk($id)
+    {
+        $data["title"] = "Struk";
+        $user_id_login = Session::get('user')->user_id;
+        
+        $results = StatusOrderModel::where('id_user', $user_id_login)
+            ->where('tbl_status_order.kode_inv', $id)
+            ->join('tbl_pesan', function ($join) {
+                $join->on('tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
+                    ->whereColumn('tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi');
+            })
+            ->join('tbl_barang', 'tbl_barang.barang_id', '=', 'tbl_pesan.pesan_idbarang')
+            ->join('tbl_satuan', 'tbl_satuan.satuan_id', '=', 'tbl_barang.satuan_id')
+            ->select('*') 
+            ->get();
+
+        return view('Admin.Pesan.struk', ['data' => $data, 'results' => $results, 'title' => $data['title']]);
+    }
       
 }
