@@ -28,19 +28,25 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input type="text" name="tglawal" class="form-control datepicker-date" placeholder="Tanggal Awal">
+                                <input type="text" name="tglawal" class="form-control datepicker-date"
+                                    placeholder="Tanggal Awal">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <input type="text" name="tglakhir" class="form-control datepicker-date" placeholder="Tanggal Akhir">
+                                <input type="text" name="tglakhir" class="form-control datepicker-date"
+                                    placeholder="Tanggal Akhir">
                             </div>
                         </div>
                         <div class="col-md-4 text-center ">
-                            <button class="btn btn-success-light mx-2 text-center" onclick="filter()"><i class="fe fe-filter"></i></button>
-                            <button class="btn btn-secondary-light mx-2 text-center" onclick="reset()"><i class="fe fe-refresh-ccw"></i></button>
-                            <button class="btn btn-primary-light mx-2 text-center" onclick="print()"><i class="fe fe-printer"></i></button>
-                            <button class="btn btn-danger-light mx-2 text-center" onclick="pdf()"><i class="fa fa-file-pdf-o"></i></button>
+                            <button class="btn btn-success-light mx-2 text-center" onclick="filter()"><i
+                                    class="fe fe-filter"></i></button>
+                            <button class="btn btn-secondary-light mx-2 text-center" onclick="reset()"><i
+                                    class="fe fe-refresh-ccw"></i></button>
+                            <button class="btn btn-primary-light mx-2 text-center" onclick="print()"><i
+                                    class="fe fe-printer"></i></button>
+                            <button class="btn btn-danger-light mx-2 text-center" onclick="pdf()"><i
+                                    class="fa fa-file-pdf-o"></i></button>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -53,6 +59,7 @@
                                 <th class="border-bottom-0">Stok Awal</th>
                                 <th class="border-bottom-0">Jumlah Masuk</th>
                                 <th class="border-bottom-0">Jumlah Keluar</th>
+                                <th class="border-bottom-0">Jumlah Pesan</th>
                                 <th class="border-bottom-0">Total Stok</th>
                             </thead>
                             <tbody></tbody>
@@ -123,10 +130,13 @@
                     {
                         data: 'stokawal',
                         name: 'barang_stok',
+                        orderable: false,
+                        orderable: false,
                     },
                     {
                         data: 'jmlmasuk',
                         name: 'barang_kode',
+                        orderable: false,
                         orderable: false,
                     },
                     {
@@ -135,6 +145,29 @@
                         searchable: false,
                         orderable: false,
                     },
+                    {
+                        data: 'totalpesan',
+                        name: 'totalpesan',
+                        searchable: false,
+                        orderable: false,
+                        render: function(data, type, row) {
+                            // Tentukan kelas warna badge berdasarkan nilai totalpesan
+                            var badgeClass = 'bg-danger';
+                            if (data > 0 && data <= 100) {
+                                badgeClass = 'bg-info';
+                            } else if (data > 100) {
+                                badgeClass = 'bg-success';
+                            }
+
+                            // Buat elemen span dengan kelas badge sesuai
+                            var badgeSpan = '<span class="badge ' + badgeClass + '"> - ' + data + '</span>';
+
+                            // Tambahkan div dengan display flex untuk badge di tengah
+                            return '<div style="display: flex; align-items: center; justify-content: center;">' +
+                                badgeSpan + '</div>';
+                        }
+                    },
+
                     {
                         data: 'totalstok',
                         name: 'barang_kode',

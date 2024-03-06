@@ -26,7 +26,7 @@ class LapBarangMasukController extends Controller
             $data['data'] = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')->orderBy('bm_id', 'DESC')->get();
         }
 
-        $data["title"] = "Print Barang Masuk";
+        $data["title"] = "Laporan Barang Masuk";
         $data['web'] = WebModel::first();
         $data['tglawal'] = $request->tglawal;
         $data['tglakhir'] = $request->tglakhir;

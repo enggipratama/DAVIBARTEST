@@ -60,15 +60,29 @@ use Carbon\Carbon;
             align-items: flex-start;
             margin-top: 32px;
         }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            text-align: right;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+
+        b {
+            font-size: 15px;
+        }
     </style>
 
 </head>
 
 <body>
-
-
+    <div style="margin-left: 10px; border-top: 2px solid black; margin-top: 10px;">
+        <!-- Konten atau elemen lainnya dapat ditambahkan di sini -->
+    </div>
     <center>
-        <h1 class="font-medium">Laporan Stok Barang</h1>
+        <h3>Laporan Stok Barang</h3>
         @if ($tglawal == '')
             <h4 class="font-medium">Semua Tanggal</h4>
         @else
@@ -80,7 +94,7 @@ use Carbon\Carbon;
 
     <table border="1" id="table1">
         <thead>
-            <tr>
+            <tr style="background-color: #f0f0f0;">
                 <th align="center" width="1%">NO</th>
                 <th>KODE BARANG</th>
                 <th>BARANG</th>
@@ -107,19 +121,11 @@ use Carbon\Carbon;
                     <td>Rp. {{ number_format($d['totalStokRP'], 0, ',', '.') }}</td>
                 </tr>
             @endforeach
-            <!-- ... Kolom total ... -->
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td align="right"><b style="font-size: 12px;">Total :</b></td>
-            <td><b style="font-size: 12px;">Rp. {{ number_format($totalStokRPTotal, 0, ',', '.') }}</b></td>
         </tbody>
     </table>
-
+    <div class="container ">
+        <b>Total : Rp. {{ number_format($totalStokRPTotal, 0, ',', '.') }}</b>
+    </div>
 </body>
 
 </html>

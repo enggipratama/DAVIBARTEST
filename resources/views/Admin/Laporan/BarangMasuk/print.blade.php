@@ -65,22 +65,40 @@ use Carbon\Carbon;
             align-items: flex-start;
             margin-top: 32px;
         }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            text-align: right;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+
+        b {
+            font-size: 15px;
+        }
     </style>
 
 </head>
 
 <body onload="window.print()">
-
-    <center>
+    <div style="display: flex; align-items: center; ">
         @if ($web->web_logo == '' || $web->web_logo == 'default.png')
-            <img src="{{ url('/assets/default/web/default.png') }}" width="80px" alt="">
+            <img src="{{ url('/assets/default/web/default.png') }}" width="50px" alt=""
+                style="margin-left: 10px; border-radius: 10%; ">
         @else
-            <img src="{{ asset('storage/web/' . $web->web_logo) }}" width="80px" alt="">
+            <img src="{{ asset('storage/web/' . $web->web_logo) }}" width="50px" alt=""
+                style="margin-left: 10px; border-radius: 10%; ">
         @endif
-    </center>
+        <h4 style="margin-left: 10px; text-align: center;">{{ $web->web_nama }}</h4>
+    </div>
+    <div style="margin-left: 10px; border-top: 2px solid black; margin-top: 10px;">
+        <!-- Konten atau elemen lainnya dapat ditambahkan di sini -->
+    </div>
 
     <center>
-        <h1 class="font-medium">Laporan Barang Masuk</h1>
+        <h3>Laporan Barang Masuk</h3>
         @if ($tglawal == '')
             <h4 class="font-medium">Semua Tanggal</h4>
         @else
@@ -92,7 +110,7 @@ use Carbon\Carbon;
 
     <table border="1" id="table1">
         <thead>
-            <tr>
+            <tr style="background-color: #f0f0f0;"> <!-- Set your desired background color -->
                 <th align="center" width="1%">NO</th>
                 <th>TGL MASUK</th>
                 <th>KODE BRG MASUK</th>
@@ -101,7 +119,7 @@ use Carbon\Carbon;
                 <th>BARANG</th>
                 <th>JML MASUK</th>
                 <th>HARGA SATUAN</th>
-                <th>TOTAL RP.</th>
+                <th>TOTAL</th>
             </tr>
         </thead>
         <tbody>
@@ -124,21 +142,14 @@ use Carbon\Carbon;
                     <td align="center">{{ $d->bm_jumlah }}</td>
                     <td>Rp. {{ number_format($d->barang_harga, 0, ',', '.') }} / {{ $d->satuan->satuan_nama }}</td>
                     <td>Rp. {{ number_format($totalStokRP, 0, ',', '.') }}</td>
-
                 </tr>
             @endforeach
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td align="right"><b style="font-size: 12px;">Total :</b></td>
-            <td><b style="font-size: 12px;">Rp. {{ number_format($totalStokRPTotal, 0, ',', '.') }}</b></td>
         </tbody>
     </table>
-
+    
+    <div class="container ">
+        <b>Total : Rp. {{ number_format($totalStokRPTotal, 0, ',', '.') }}</b>
+    </div>
 </body>
 
 </html>

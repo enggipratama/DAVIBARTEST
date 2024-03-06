@@ -10,6 +10,7 @@ use App\Models\Admin\PesanModel;
 use App\Models\Admin\WebModel;
 use App\Models\StatusOrderModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\DataTables;
 use PDF;
 
@@ -72,7 +73,7 @@ class LapStokBarangController extends Controller
                 })
                 ->whereIn('status', ['Dikirim', 'Selesai'])
                 ->first();
-
+                
             $totalstok = $row->barang_stok + ($jmlmasuk - $jmlkeluar);
 
             if ($totalstatus) {
@@ -80,6 +81,11 @@ class LapStokBarangController extends Controller
             } else {
                 $totalreal = $totalstok - 0;
             }
+            $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
+                        ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
+                        ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
+                        ->sum('tbl_pesan.pesan_jumlah');
+                
             $totalStokRP = $row->barang_harga * $totalreal;
             $totalStokRPTotal += $totalStokRP;
             // Tambahkan totalreal ke dalam array stokData
@@ -94,12 +100,14 @@ class LapStokBarangController extends Controller
                 'jmlkeluar' => $jmlkeluar,
                 'satuan' => $row->satuan->satuan_nama,
                 'totalStokRP' => $totalStokRP,
+                'totalpesan' => $pesan_jumlah,
                 
             ];
         }
         // Tambahkan stokData dan totalStokRPTotal ke dalam array $data
             $data['totalStokRP'] = $totalStokRP;
             $data['stokData'] = $stokData;
+            $data['totalpesan']=$totalpesan;
             $data['totalStokRPTotal'] = $totalStokRPTotal;
             return $data;
     }
@@ -160,14 +168,25 @@ class LapStokBarangController extends Controller
                         $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
                     }
                     if($jmlkeluar <= 0){
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">- '.$jmlkeluar.'</span></div>';
                     }elseif ($jmlkeluar > 100){
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">- '.$jmlkeluar.'</span></div>';
                     }else{
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">'.$jmlkeluar.'</span></div>';
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">- '.$jmlkeluar.'</span></div>';
                     }
                     return $result;
                 })
+                ->addColumn('totalpesan', function ($row) use ($request) {
+                
+                    // Ubah query untuk mendapatkan pesan_jumlah dari PesanModel
+                    $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
+                        ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
+                        ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
+                        ->sum('tbl_pesan.pesan_jumlah');
+                
+                    return $pesan_jumlah;
+                })
+                
                 ->addColumn('totalstok', function ($row) use ($request) {
                     if ($request->tglawal == '') {
                         $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')->where('tbl_barangmasuk.barang_kode', '=', $row->barang_kode)->sum('tbl_barangmasuk.bm_jumlah');
