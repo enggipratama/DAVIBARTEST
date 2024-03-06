@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Admin\PesanModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class StatusOrderModel extends Model
 {
@@ -37,5 +38,15 @@ class StatusOrderModel extends Model
             self::STATUS_DIBATALKAN => 'Dibatalkan',
             // ... (lainnya)
         ];
+    }
+     public static function getEnumValues($column)
+    {
+        $type = DB::select(DB::raw("SHOW COLUMNS FROM " . DB::getTablePrefix() . (new self)->getTable() . " WHERE Field = '{$column}'"))[0]->Type;
+        preg_match('/^enum\((.*)\)$/', $type, $matches);
+        $enumValues = [];
+        foreach (explode(',', $matches[1]) as $value) {
+            $enumValues[] = trim($value, "'");
+        }
+        return $enumValues;
     }
 }

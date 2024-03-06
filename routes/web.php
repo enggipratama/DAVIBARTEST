@@ -61,6 +61,7 @@ Route::group(['middleware' => 'userlogin'], function () {
         Route::get('/admin/pesan', [PesanController::class, 'index']);
         Route::post('/admin/pesan/detail/{id}', [PesanController::class, 'updateStatus'])->name('update.status');
         Route::get('/admin/pesan/detail/{id}', [PesanController::class, 'detail'])->name('detailpesan');
+        Route::get('/admin/pesan/detail/struk/{id}', [PesanController::class, 'cetakStruk'])->name('cetakStruk');
         Route::get('/admin/pesan/status/', [PesanController::class, 'status'])->name('statustransaksi');
         Route::post('/admin/pesan/addToPesan/',[PesanController::class,'addToPesan'])->name('addPesan');
     });

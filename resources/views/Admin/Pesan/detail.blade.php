@@ -126,7 +126,7 @@
                     </div>
                 </div>
                 <div class="card-header justify-content-between">
-                    <a href="" class="btn btn-success"> Print Invoice</a>
+                    <a href="{{ route('cetakStruk', ['id' => $results->first()->kode_inv]) }}" class="btn btn-success" target="_blank">Print Invoice</a>
                     @if (Session::get('user')->role_id != 3)
                         <div class="d-flex">
                             <form method="post"

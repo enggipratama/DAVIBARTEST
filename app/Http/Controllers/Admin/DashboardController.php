@@ -48,7 +48,9 @@ class DashboardController extends Controller
                 ->join('tbl_status_order', 'tbl_status_order.id', '=', 'pesan_idtransaksi')
                 ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
                 ->sum('pesan_jumlah');
-    
+
+            $statusValues = StatusOrderModel::getEnumValues('status');
+
             $totalstatus = StatusOrderModel::with('pesan')
                 ->whereHas('pesan', function ($query) use ($dbarang) {
                     $query->where('pesan_idbarang', $dbarang->barang_id);
@@ -73,9 +75,23 @@ class DashboardController extends Controller
                 'total_stok' => $totalstok,
                 'total_real' => $totalreal
             ];
+            
+            $statusToCount = ['Pending', 'Dikirim', 'Selesai', 'Dibatalkan'];
+            foreach ($statusToCount as $status) {
+                ${$status . 'Count'} = 0;
+            }
+            // Menghitung jumlah setiap status
+            foreach ($statusToCount as $status) {
+                ${$status . 'Count'} = StatusOrderModel::where('status', $status)->count();
+            }            
+            // Menggabungkan variabel-variabel jumlah status ke dalam array $data
+            $data['PendingCount'] = $PendingCount;
+            $data['DikirimCount'] = $DikirimCount;
+            $data['SelesaiCount'] = $SelesaiCount;
+            $data['DibatalkanCount'] = $DibatalkanCount;
         }
-        // dd($dataBarang);
-        return view('Admin.Dashboard.index', ['data' => $data, 'arr' => $arr]);
+        // dd($data);
+        return view('Admin.Dashboard.index', ['data' => $data, 'arr' => $arr, 'statusValues' => $statusToCount]);
     }
 }
 
