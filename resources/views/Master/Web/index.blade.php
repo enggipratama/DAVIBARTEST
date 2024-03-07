@@ -37,18 +37,34 @@
                     </div>
 
                     <hr class="">
-
-                    <div class="d-flex justify-content-between mx-4">
-                        <h6 class="mr-4">Alamat</h6>
-                        <h6 class="font-weight-bold">{{ $d->web_alamat == '' ? '-' : $d->web_alamat }}</h6>
+                    <div>
+                        <label class="form-label">Alamat</label>
+                        <div class=" input-group" id="alamat">
+                            <a class="input-group-text bg-white">
+                                <i class="fa fa-home"></i>
+                            </a>
+                            <textarea class="form-control" id="alamat" rows="2" name="alamat" disabled>{{ $d->web_alamat == '' ? '-' : $d->web_alamat }}</textarea>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between mx-4">
-                        <h6 class="mr-4">No Telpon</h6>
-                        <h6 class="font-weight-bold">{{ $d->web_tlpn == '0' ? '-' : $d->web_tlpn }}</h6>
+                    <div>
+                        <label class="form-label">No Telpon</label>
+                        <div class=" input-group" id="notlp">
+                            <a class="input-group-text bg-white">
+                                <i class="fa fa-phone"></i>
+                            </a>
+                            <input class="form-control" id="notlp" type="text" name="notlp"
+                                value="{{ $d->web_tlpn == '' ? '-' : $d->web_tlpn }}" disabled>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between mx-4">
-                        <h6 class="mr-4">Deskripsi</h6>
-                        <h6 class="font-weight-bold">{{ $d->web_deskripsi == '' ? '-' : $d->web_deskripsi }}</h6>
+                    <div>
+                        <label class="form-label">Deskripsi</label>
+                        <div class=" input-group" id="deskripsi">
+                            <a class="input-group-text bg-white">
+                                <i class="fa fa-list"></i>
+                            </a>
+                            <input class="form-control" id="deskripsi" type="text" name="deskripsi"
+                                value="{{ $d->web_deskripsi }}" disabled>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,7 +97,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Judul Website</label>
+                            <label>Nama Website</label>
                             <input type="text" class="form-control" name="nmweb" value="{{ $d->web_nama }}">
                         </div>
                         <div class="form-group">

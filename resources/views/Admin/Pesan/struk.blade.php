@@ -110,9 +110,9 @@ use Carbon\Carbon;
             @foreach ($results as $result)
                 <tr>
                     <td>{{ $result->barang_nama }}</td>
-                    <td>Rp. {{ number_format($result->barang_harga, 0) }}</td>
+                    <td>Rp. {{ number_format($result->barang_harga, 0, ',', '.') }}</td>
                     <td>{{ $result->pesan_jumlah }} {{ $result->satuan_nama }}</td>
-                    <td>Rp. {{ number_format($result->pesan_jumlah * $result->barang_harga, 0) }}</td>
+                    <td>Rp. {{ number_format($result->pesan_jumlah * $result->barang_harga, 0, ',', '.') }}</td>
                 </tr>
                 @php
                     $totalHarga += $result->pesan_jumlah * $result->barang_harga; // Accumulate the total harga
@@ -123,7 +123,7 @@ use Carbon\Carbon;
         <tfoot>
             <tr style="background-color: lightgray;">
                 <td colspan="3" align="right"> Total Harga</td>
-                <td colspan="4" align="left"> Rp. {{ number_format($totalHarga, 0) }}</td>
+                <td colspan="4" align="left"> Rp. {{ number_format($totalHarga, 0, ',', '.') }}</td>
             </tr>
         </tfoot>
     </table>

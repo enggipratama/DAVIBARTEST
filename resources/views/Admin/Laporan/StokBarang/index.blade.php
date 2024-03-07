@@ -147,25 +147,9 @@
                     },
                     {
                         data: 'totalpesan',
-                        name: 'totalpesan',
+                        name: 'pesan_id',
                         searchable: false,
                         orderable: false,
-                        render: function(data, type, row) {
-                            // Tentukan kelas warna badge berdasarkan nilai totalpesan
-                            var badgeClass = 'bg-danger';
-                            if (data > 0 && data <= 100) {
-                                badgeClass = 'bg-info';
-                            } else if (data > 100) {
-                                badgeClass = 'bg-success';
-                            }
-
-                            // Buat elemen span dengan kelas badge sesuai
-                            var badgeSpan = '<span class="badge ' + badgeClass + '"> - ' + data + '</span>';
-
-                            // Tambahkan div dengan display flex untuk badge di tengah
-                            return '<div style="display: flex; align-items: center; justify-content: center;">' +
-                                badgeSpan + '</div>';
-                        }
                     },
 
                     {

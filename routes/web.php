@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\LapBarangMasukController;
 use App\Http\Controllers\Admin\LapStokBarangController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\MerkController;
+use App\Http\Controllers\Admin\PendapatanController;
 use App\Http\Controllers\Admin\SatuanController;
 use App\Http\Controllers\Admin\PesanController;
 use App\Http\Controllers\Master\AksesController;
@@ -153,6 +154,14 @@ Route::group(['middleware' => 'userlogin'], function () {
         Route::get('/admin/lapstokbarang/print/', [LapStokBarangController::class, 'print'])->name('lap-sb.print');
         Route::get('/admin/lapstokbarang/pdf/', [LapStokBarangController::class, 'pdf'])->name('lap-sb.pdf');
         Route::get('/admin/lap-stok-barang/show/', [LapStokBarangController::class, 'show'])->name('lap-sb.getlap-sb');
+    });
+
+    Route::middleware(['checkRoleUser:/lap-pendapatan,submenu'])->group(function () {
+        // Laporan Stok Barang
+        Route::resource('/admin/lap-pendapatan', \App\Http\Controllers\Admin\PendapatanController::class);
+        Route::get('/admin/lappendapatan/print/', [PendapatanController::class, 'print'])->name('lap-pendapatan.print');
+        Route::get('/admin/lappendapatan/pdf/', [PendapatanController::class, 'pdf'])->name('lap-pendapatan.pdf');
+        Route::get('/admin/lap-pendapatan/show/', [PendapatanController::class, 'show'])->name('lap-pendapatan.getlap-sb');
     });
 
     Route::middleware(['checkRoleUser:1,othermenu'])->group(function () {

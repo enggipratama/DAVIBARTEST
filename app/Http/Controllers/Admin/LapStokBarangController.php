@@ -10,6 +10,7 @@ use App\Models\Admin\PesanModel;
 use App\Models\Admin\WebModel;
 use App\Models\StatusOrderModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\DataTables;
 use PDF;
@@ -62,11 +63,18 @@ class LapStokBarangController extends Controller
                     ->sum('tbl_barangkeluar.bk_jumlah');
             }
 
-            $totalpesan = PesanModel::where('pesan_idbarang', $row->barang_id)
-                ->join('tbl_status_order', 'tbl_status_order.id', '=', 'pesan_idtransaksi')
-                ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
-                ->sum('pesan_jumlah');
-
+            if ($request->tglawal) {
+                $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
+                    ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
+                    ->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir])
+                    ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
+                    ->sum('tbl_pesan.pesan_jumlah');
+            } else {
+                $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
+                    ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
+                    ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
+                    ->sum('tbl_pesan.pesan_jumlah');
+            }
             $totalstatus = StatusOrderModel::with('pesan')
                 ->whereHas('pesan', function ($query) use ($row) {
                     $query->where('pesan_idbarang', $row->barang_id);
@@ -77,14 +85,11 @@ class LapStokBarangController extends Controller
             $totalstok = $row->barang_stok + ($jmlmasuk - $jmlkeluar);
 
             if ($totalstatus) {
-                $totalreal = $totalstok - $totalpesan;
+                $totalreal = $totalstok - $pesan_jumlah;
             } else {
-                $totalreal = $totalstok - 0;
+                $totalreal = $totalstok ;
             }
-            $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
-                        ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
-                        ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
-                        ->sum('tbl_pesan.pesan_jumlah');
+            
                 
             $totalStokRP = $row->barang_harga * $totalreal;
             $totalStokRPTotal += $totalStokRP;
@@ -107,7 +112,7 @@ class LapStokBarangController extends Controller
         // Tambahkan stokData dan totalStokRPTotal ke dalam array $data
             $data['totalStokRP'] = $totalStokRP;
             $data['stokData'] = $stokData;
-            $data['totalpesan']=$totalpesan;
+            $data['totalpesan']=$pesan_jumlah;
             $data['totalStokRPTotal'] = $totalStokRPTotal;
             return $data;
     }
@@ -120,7 +125,7 @@ class LapStokBarangController extends Controller
     public function pdf(Request $request)
     {
         $data = $this->prepareData($request);
-        $pdf = PDF::loadView('Admin.Laporan.StokBarang.pdf', $data);
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('Admin.Laporan.StokBarang.pdf', $data);
 
         if ($request->tglawal) {
             return $pdf->download('lap-stok-' . $request->tglawal . '-' . $request->tglakhir . '.pdf');
@@ -168,23 +173,39 @@ class LapStokBarangController extends Controller
                         $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
                     }
                     if($jmlkeluar <= 0){
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1">- '.$jmlkeluar.'</span></div>';
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1"> '.$jmlkeluar.'</span></div>';
                     }elseif ($jmlkeluar > 100){
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1">- '.$jmlkeluar.'</span></div>';
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1"> '.$jmlkeluar.'</span></div>';
                     }else{
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1">- '.$jmlkeluar.'</span></div>';
+                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1"> '.$jmlkeluar.'</span></div>';
                     }
                     return $result;
                 })
                 ->addColumn('totalpesan', function ($row) use ($request) {
                 
-                    // Ubah query untuk mendapatkan pesan_jumlah dari PesanModel
+                    // Ubah query untuk mendapatkan pesan_jumlah dari PesanModel berdasarkan tanggal created_at
+                if ($request->tglawal) {
+                    $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
+                        ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
+                        ->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir])
+                        ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
+                        ->sum('tbl_pesan.pesan_jumlah');
+                } else {
                     $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
                         ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
                         ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
                         ->sum('tbl_pesan.pesan_jumlah');
+                }
+                    
+                if ($pesan_jumlah <= 0) {
+                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm me-1 mb-1 mt-1"> ' . $pesan_jumlah . '</span></div>';
+                } elseif ($pesan_jumlah > 100) {
+                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm me-1 mb-1 mt-1"> ' . $pesan_jumlah . '</span></div>';
+                } else {
+                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm me-1 mb-1 mt-1"> ' . $pesan_jumlah . '</span></div>';
+                }
                 
-                    return $pesan_jumlah;
+                return $result;
                 })
                 
                 ->addColumn('totalstok', function ($row) use ($request) {
@@ -229,7 +250,7 @@ class LapStokBarangController extends Controller
                     
                     return $result;
                 })
-                ->rawColumns(['stokawal', 'jmlmasuk', 'jmlkeluar', 'totalstok'])->make(true);
+                ->rawColumns(['stokawal', 'jmlmasuk', 'jmlkeluar', 'totalstok', 'totalpesan'])->make(true);
         }
     }
 }

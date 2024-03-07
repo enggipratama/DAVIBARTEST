@@ -149,8 +149,8 @@ use Carbon\Carbon;
                     <td>{{ $d['barang_nama']}}</td>
                     <td align="center">{{ $d['barang_stok'] }}</td>
                     <td align="center">{{ $d['jmlmasuk'] }}</td>
-                    <td align="center">- {{ $d['jmlkeluar'] }}</td>
-                    <td align="center">- {{ $d['totalpesan'] }}</td>
+                    <td align="center">{{ $d['jmlkeluar'] }}</td>
+                    <td align="center">{{ $d['totalpesan'] }}</td>
                     <td align="center">{{ $d['totalreal'] }}</td>
                     <td>Rp. {{ number_format($d['barang_harga'], 0, ',', '.') }} / {{ $d['satuan'] }}</td>
                     <td>Rp. {{ number_format($d['totalStokRP'], 0, ',', '.') }}</td>
