@@ -59,8 +59,7 @@
                                 <th class="border-bottom-0">Stok Awal</th>
                                 <th class="border-bottom-0">Jumlah Masuk</th>
                                 <th class="border-bottom-0">Jumlah Keluar</th>
-                                <th class="border-bottom-0">Jumlah Pesan</th>
-                                <th class="border-bottom-0">Total Stok</th>
+                                <th class="border-bottom-0">Sisa Stok</th>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -145,13 +144,6 @@
                         searchable: false,
                         orderable: false,
                     },
-                    {
-                        data: 'totalpesan',
-                        name: 'pesan_id',
-                        searchable: false,
-                        orderable: false,
-                    },
-
                     {
                         data: 'totalstok',
                         name: 'barang_kode',

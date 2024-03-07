@@ -161,7 +161,7 @@ Route::group(['middleware' => 'userlogin'], function () {
         Route::resource('/admin/lap-pendapatan', \App\Http\Controllers\Admin\PendapatanController::class);
         Route::get('/admin/lappendapatan/print/', [PendapatanController::class, 'print'])->name('lap-pendapatan.print');
         Route::get('/admin/lappendapatan/pdf/', [PendapatanController::class, 'pdf'])->name('lap-pendapatan.pdf');
-        Route::get('/admin/lap-pendapatan/show/', [PendapatanController::class, 'show'])->name('lap-pendapatan.getlap-sb');
+        Route::get('/admin/lap-pendapatan/show/', [PendapatanController::class, 'show'])->name('lap-pendapatan.getlap');
     });
 
     Route::middleware(['checkRoleUser:1,othermenu'])->group(function () {

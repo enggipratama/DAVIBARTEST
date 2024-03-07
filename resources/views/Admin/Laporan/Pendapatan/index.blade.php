@@ -56,11 +56,9 @@
                                 <th class="border-bottom-0" width="1%">No</th>
                                 <th class="border-bottom-0">Kode Barang</th>
                                 <th class="border-bottom-0">Barang</th>
-                                <th class="border-bottom-0">Stok Awal</th>
-                                <th class="border-bottom-0">Jumlah Masuk</th>
-                                <th class="border-bottom-0">Jumlah Keluar</th>
-                                <th class="border-bottom-0">Jumlah Pesan</th>
                                 <th class="border-bottom-0">Total Stok</th>
+                                <th class="border-bottom-0">Stok Keluar</th>
+                                <th class="border-bottom-0">Tersedia</th>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -70,4 +68,178 @@
         </div>
     </div>
     <!-- END ROW -->
+@endsection
+@section('scripts')
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $(document).ready(function() {
+        getData();
+    });
+
+    function getData() {
+        //datatables
+        table = $('#table-1').DataTable({
+
+            "processing": true,
+            "serverSide": true,
+            "info": true,
+            "order": [],
+            "scrollX": true,
+            "stateSave": true,
+            "lengthMenu": [
+                [5, 10, 25, 50, 100, -1],
+                [5, 10, 25, 50, 100, 'Semua']
+            ],
+            "pageLength": 10,
+
+            lengthChange: true,
+
+            "ajax": {
+                "url": "{{ route('lap-pendapatan.getlap') }}",
+                "data": function(d) {
+                    d.tglawal = $('input[name="tglawal"]').val();
+                    d.tglakhir = $('input[name="tglakhir"]').val();
+                }
+            },
+
+            "columns": [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    searchable: false
+                },
+                {
+                    data: 'barang_kode',
+                    name: 'barang_kode',
+                    render: function(data, type, row) {
+                            data = '<span style="color: rgb(15, 209, 41);">' + data + '</span>';
+                            return data;
+                        }
+                },
+                {
+                    data: 'barang',
+                    name: 'barang_nama',
+                    searchable: false,
+                    orderable: false,
+                },
+                {
+                    data: 'totalstok',
+                    name: 'totalstok',
+                    searchable: false,
+                    orderable: false,
+                },
+                {
+                    data: 'totalpesan',
+                    name: 'totalpesan',
+                    searchable: false,
+                    orderable: false,
+                },
+                {
+                    data: 'stoksisa',
+                    name: 'stoksisa',
+                    searchable: false,
+                    orderable: false,
+                },
+            ],
+
+        });
+    }
+
+    function filter() {
+        var tglawal = $('input[name="tglawal"]').val();
+        var tglakhir = $('input[name="tglakhir"]').val();
+        if (tglawal != '' && tglakhir != '') {
+            table.ajax.reload(null, false);
+        } else {
+            validasi("Isi dulu Form Filter Tanggal!", 'warning');
+        }
+
+    }
+
+    function reset() {
+        $('input[name="tglawal"]').val('');
+        $('input[name="tglakhir"]').val('');
+        table.ajax.reload(null, false);
+    }
+
+    function print() {
+        var tglawal = $('input[name="tglawal"]').val();
+        var tglakhir = $('input[name="tglakhir"]').val();
+        if (tglawal != '' && tglakhir != '') {
+            window.open(
+                "{{route('lap-pendapatan.print')}}?tglawal=" + tglawal + "&tglakhir=" + tglakhir,
+                '_blank'
+            );
+        } else {
+            swal({
+                title: "Yakin Print Semua Data?",
+                type: "warning",
+                buttons: true,
+                dangerMode: true,
+                confirmButtonText: "Yakin",
+                cancelButtonText: 'Batal',
+                showCancelButton: true,
+                showConfirmButton: true,
+                closeOnConfirm: false,
+                confirmButtonColor: '#09ad95',
+            }, function(value) {
+                if (value == true) {
+                    window.open(
+                        "{{route('lap-pendapatan.print')}}",
+                        '_blank'
+                    );
+                    swal.close();
+                }
+            });
+
+        }
+
+    }
+
+    function pdf() {
+        var tglawal = $('input[name="tglawal"]').val();
+        var tglakhir = $('input[name="tglakhir"]').val();
+        if (tglawal != '' && tglakhir != '') {
+            window.open(
+                "{{route('lap-pendapatan.pdf')}}?tglawal=" + tglawal + "&tglakhir=" + tglakhir,
+                '_blank'
+            );
+        } else {
+            swal({
+                title: "Yakin export PDF Semua Data?",
+                type: "warning",
+                buttons: true,
+                dangerMode: true,
+                confirmButtonText: "Yakin",
+                cancelButtonText: 'Batal',
+                showCancelButton: true,
+                showConfirmButton: true,
+                closeOnConfirm: false,
+                confirmButtonColor: '#09ad95',
+            }, function(value) {
+                if (value == true) {
+                    window.open(
+                        "{{route('lap-pendapatan.pdf')}}",
+                        '_blank'
+                    );
+                    swal.close();
+                }
+            });
+
+        }
+
+    }
+
+    function validasi(judul, status) {
+        swal({
+            title: judul,
+            type: status,
+            confirmButtonText: "Iya."
+        });
+    }
+</script>
 @endsection

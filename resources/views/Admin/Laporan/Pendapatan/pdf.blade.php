@@ -109,10 +109,7 @@ use Carbon\Carbon;
                 <th align="center" width="1%">NO</th>
                 <th>KODE BARANG</th>
                 <th>BARANG</th>
-                <th>STOK AWAL</th>
-                <th>JML MASUK</th>
-                <th>JML KELUAR</th>
-                <th>TOTAL</th>
+                <th>STOK KELUAR</th>
                 <th>HARGA SATUAN</th>
                 <th>TOTAL RP.</th>
             </tr>
@@ -120,17 +117,14 @@ use Carbon\Carbon;
         <tbody>
             @php $no=1; @endphp
             @foreach ($stokData as $d)
-                <tr>
-                    <td align="center">{{ $no++ }}</td>
-                    <td>{{ $d['barang_kode'] }}</td>
-                    <td>{{ $d['barang_nama']}}</td>
-                    <td align="center">{{ $d['barang_stok'] }}</td>
-                    <td align="center">{{ $d['jmlmasuk'] }}</td>
-                    <td align="center">{{ $d['jmlkeluar'] }}</td>
-                    <td align="center">{{ $d['totalreal'] }}</td>
-                    <td>Rp. {{ number_format($d['barang_harga'], 0, ',', '.') }} / {{ $d['satuan'] }}</td>
-                    <td>Rp. {{ number_format($d['totalStokRP'], 0, ',', '.') }}</td>
-                </tr>
+            <tr>
+                <td align="center">{{ $no++ }}</td>
+                <td>{{ $d['barang_kode'] }}</td>
+                <td>{{ $d['barang_nama']}}</td>
+                <td align="center">{{ $d['jmlkeluar'] }}</td>
+                <td>Rp. {{ number_format($d['barang_harga'], 0, ',', '.') }} / {{ $d['satuan'] }}</td>
+                <td>Rp. {{ number_format($d['totalStokRP'], 0, ',', '.') }}</td>
+            </tr>
             @endforeach
         </tbody>
     </table>

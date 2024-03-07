@@ -205,9 +205,27 @@ class BarangController extends Controller
                         $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
                     }
 
+                    $totalpesan = PesanModel::where('pesan_idbarang', $row->barang_id)
+                    ->join('tbl_status_order', 'tbl_status_order.id', '=', 'pesan_idtransaksi')
+                    ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
+                    ->sum('pesan_jumlah');
+
+                    $totalstatus = StatusOrderModel::with('pesan')
+                        ->whereHas('pesan', function ($query) use ($row) {
+                            $query->where('pesan_idbarang', $row->barang_id);
+                        })
+                        ->whereIn('status', ['Dikirim', 'Selesai'])
+                        ->first();
+
                     $totalstok = $row->barang_stok + ($jmlmasuk - $jmlkeluar);
-                
-                    return $totalstok;
+
+                    if ($totalstatus) {
+                        $totalreal = $totalstok - $totalpesan;
+                    } else {
+                        $totalreal = $totalstok - 0;
+                    }
+
+                    return $totalreal;
                 })
                 ->addColumn('action', function ($row) use ($request) {
                     $array = array(

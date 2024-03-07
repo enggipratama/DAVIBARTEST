@@ -89,8 +89,7 @@ class LapStokBarangController extends Controller
             } else {
                 $totalreal = $totalstok ;
             }
-            
-                
+
             $totalStokRP = $row->barang_harga * $totalreal;
             $totalStokRPTotal += $totalStokRP;
             // Tambahkan totalreal ke dalam array stokData
@@ -102,7 +101,7 @@ class LapStokBarangController extends Controller
                 'barang_stok' => $row->barang_stok,
                 'barang_harga' => $row->barang_harga,
                 'jmlmasuk' => $jmlmasuk,
-                'jmlkeluar' => $jmlkeluar,
+                'jmlkeluar' => $jmlkeluar + $pesan_jumlah,
                 'satuan' => $row->satuan->satuan_nama,
                 'totalStokRP' => $totalStokRP,
                 'totalpesan' => $pesan_jumlah,
@@ -168,22 +167,15 @@ class LapStokBarangController extends Controller
                 })
                 ->addColumn('jmlkeluar', function ($row) use ($request) {
                     if ($request->tglawal) {
-                        $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->whereBetween('bk_tanggal', [$request->tglawal, $request->tglakhir])->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
+                        $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')
+                            ->whereBetween('bk_tanggal', [$request->tglawal, $request->tglakhir])
+                            ->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)
+                            ->sum('tbl_barangkeluar.bk_jumlah');
                     } else {
-                        $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)->sum('tbl_barangkeluar.bk_jumlah');
+                        $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')
+                            ->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)
+                            ->sum('tbl_barangkeluar.bk_jumlah');
                     }
-                    if($jmlkeluar <= 0){
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm  me-1 mb-1 mt-1"> '.$jmlkeluar.'</span></div>';
-                    }elseif ($jmlkeluar > 100){
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm  me-1 mb-1 mt-1"> '.$jmlkeluar.'</span></div>';
-                    }else{
-                        $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm  me-1 mb-1 mt-1"> '.$jmlkeluar.'</span></div>';
-                    }
-                    return $result;
-                })
-                ->addColumn('totalpesan', function ($row) use ($request) {
-                
-                    // Ubah query untuk mendapatkan pesan_jumlah dari PesanModel berdasarkan tanggal created_at
                 if ($request->tglawal) {
                     $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
                         ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
@@ -196,13 +188,13 @@ class LapStokBarangController extends Controller
                         ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
                         ->sum('tbl_pesan.pesan_jumlah');
                 }
-                    
-                if ($pesan_jumlah <= 0) {
-                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm me-1 mb-1 mt-1"> ' . $pesan_jumlah . '</span></div>';
-                } elseif ($pesan_jumlah > 100) {
-                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm me-1 mb-1 mt-1"> ' . $pesan_jumlah . '</span></div>';
+                    $totalkeluar = $jmlkeluar + $pesan_jumlah;
+                if ($totalkeluar <= 0) {
+                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-danger badge-sm me-1 mb-1 mt-1"> ' . $totalkeluar. '</span></div>';
+                } elseif ($totalkeluar > 100) {
+                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-success badge-sm me-1 mb-1 mt-1"> ' . $totalkeluar . '</span></div>';
                 } else {
-                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm me-1 mb-1 mt-1"> ' . $pesan_jumlah . '</span></div>';
+                    $result = '<div class="d-flex justify-content-center"><span class="badge bg-info badge-sm me-1 mb-1 mt-1"> ' . $totalkeluar . '</span></div>';
                 }
                 
                 return $result;
