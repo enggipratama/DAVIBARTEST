@@ -59,8 +59,8 @@
 
     <!-- Page halaman status -->
     <div class="row">
-        @foreach ($statusValues as $status)
-            @if(Session::get('user')->role_id == 1 || Session::get('user')->role_id == 2 ||Session::get('user')->role_id == 4 )
+        @foreach ($data['statusToCount'] as $status)
+            @if(Session::get('user')->role_id == 1 || Session::get('user')->role_id == 2 || Session::get('user')->role_id == 4)
                 <div class="col-sm-6 col-md-6 col-lg-6 col-xl-3">
                     <div class="card 
                         @if($status == 'Pending')
@@ -97,6 +97,7 @@
             @endif
         @endforeach
     </div>
+    
     
     <div class="container">
         <div class="row">

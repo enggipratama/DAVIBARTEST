@@ -26,7 +26,7 @@ class JenisBarangController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('ket', function ($row) {
-                    $ket = $row->jenisbarang_ket == '' ? '-' : $row->jenisbarang_ket;
+                    $ket = $row->jenisbarang_keterangan == '' ? '-' : $row->jenisbarang_keterangan;
 
                     return $ket;
                 })
@@ -34,7 +34,7 @@ class JenisBarangController extends Controller
                     $array = array(
                         "jenisbarang_id" => $row->jenisbarang_id,
                         "jenisbarang_nama" => trim(preg_replace('/[^A-Za-z0-9-]+/', '_', $row->jenisbarang_nama)),
-                        "jenisbarang_ket" => trim(preg_replace('/[^A-Za-z0-9-]+/', '_', $row->jenisbarang_ket)),
+                        "jenisbarang_keterangan" => trim(preg_replace('/[^A-Za-z0-9-]+/', '_', $row->jenisbarang_keterangan)),
                     );
                     $data["title"] ="Jenis Produk";
                     $button = '';
@@ -76,7 +76,7 @@ class JenisBarangController extends Controller
         JenisBarangModel::create([
             'jenisbarang_nama' => $request->jenisbarang,
             'jenisbarang_slug'   => $slug,
-            'jenisbarang_ket' => $request->ket
+            'jenisbarang_keterangan' => $request->ket,
         ]);
 
         return response()->json(['success' => 'Berhasil']);
@@ -90,7 +90,7 @@ class JenisBarangController extends Controller
         $jenisbarang->update([
             'jenisbarang_nama' => $request->jenisbarang,
             'jenisbarang_slug'   => $slug,
-            'jenisbarang_ket' => $request->ket
+            'jenisbarang_keterangan' => $request->ket,
         ]);
 
         return response()->json(['success' => 'Berhasil']);

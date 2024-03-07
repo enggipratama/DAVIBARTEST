@@ -73,14 +73,25 @@ use Carbon\Carbon;
         b {
             font-size: 15px;
         }
+        hr {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+
+        .logo-container {
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 50px;
+            border-radius: 10%;
+        }
     </style>
 
 </head>
 
 <body>
-    <div style="margin-left: 10px; border-top: 2px solid black; margin-top: 10px;">
-        <!-- Konten atau elemen lainnya dapat ditambahkan di sini -->
-    </div>
+    <hr>
     <center>
         <h3>Laporan Stok Barang</h3>
         @if ($tglawal == '')
@@ -101,6 +112,7 @@ use Carbon\Carbon;
                 <th>STOK AWAL</th>
                 <th>JML MASUK</th>
                 <th>JML KELUAR</th>
+                <th>JML PESAN</th>
                 <th>TOTAL</th>
                 <th>HARGA SATUAN</th>
                 <th>TOTAL RP.</th>
@@ -115,7 +127,8 @@ use Carbon\Carbon;
                     <td>{{ $d['barang_nama']}}</td>
                     <td align="center">{{ $d['barang_stok'] }}</td>
                     <td align="center">{{ $d['jmlmasuk'] }}</td>
-                    <td align="center">{{ $d['jmlkeluar'] }}</td>
+                    <td align="center">- {{ $d['jmlkeluar'] }}</td>
+                    <td align="center">- {{ $d['totalpesan'] }}</td>
                     <td align="center">{{ $d['totalreal'] }}</td>
                     <td>Rp. {{ number_format($d['barang_harga'], 0, ',', '.') }} / {{ $d['satuan'] }}</td>
                     <td>Rp. {{ number_format($d['totalStokRP'], 0, ',', '.') }}</td>

@@ -34,11 +34,15 @@ class WebController extends Controller
             $web->update([
                 'web_logo' => $image->hashName(),
                 'web_nama' => $request->nmweb,
+                'web_alamat' => $request->nmalamat,
+                'web_tlpn' => $request->nmtlpn,
                 'web_deskripsi' => $request->desk,
             ]);
         } else {
             $web->update([
                 'web_nama' => $request->nmweb,
+                'web_alamat' => $request->nmalamat,
+                'web_tlpn' => $request->nmtlpn,
                 'web_deskripsi'   => $request->desk,
             ]);
         }

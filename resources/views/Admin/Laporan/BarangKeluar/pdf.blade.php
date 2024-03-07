@@ -71,14 +71,25 @@ use Carbon\Carbon;
         b {
             font-size: 15px;
         }
+        hr {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+
+        .logo-container {
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 50px;
+            border-radius: 10%;
+        }
     </style>
 
 </head>
 
 <body>
-    <div style="margin-left: 10px; border-top: 2px solid black; margin-top: 10px;">
-        <!-- Konten atau elemen lainnya dapat ditambahkan di sini -->
-    </div>
+    <hr> 
     <center>
         <h3>Laporan Barang Keluar</h3>
         @if ($tglawal == '')

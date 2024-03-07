@@ -78,24 +78,36 @@ use Carbon\Carbon;
         b {
             font-size: 15px;
         }
+        hr {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+
+        .logo-container {
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 50px;
+            border-radius: 10%;
+        }
     </style>
 
 </head>
 
 <body onload="window.print()">
-    <div style="display: flex; align-items: center; ">
+    <div class="logo-container">
         @if ($web->web_logo == '' || $web->web_logo == 'default.png')
-            <img src="{{ url('/assets/default/web/default.png') }}" width="50px" alt=""
-                style="margin-left: 10px; border-radius: 10%; ">
+            <img src="{{ url('/assets/default/web/default.png') }}" alt="">
         @else
-            <img src="{{ asset('storage/web/' . $web->web_logo) }}" width="50px" alt=""
-                style="margin-left: 10px; border-radius: 10%; ">
+            <img src="{{ asset('storage/web/' . $web->web_logo) }}" alt="">
         @endif
-        <h4 style="margin-left: 10px; text-align: center;">{{ $web->web_nama }}</h4>
+        <div class="text-center">
+            <h3 style="font-size: 0.8em;">{{ $web->web_nama }}</h3>
+            <p style="font-size: 0.7em;">{{ $web->web_alamat }}. No.Tlp {{ $web->web_tlpn }}</p>
+        </div>
     </div>
-    <div style="margin-left: 10px; border-top: 2px solid black; margin-top: 10px;">
-        <!-- Konten atau elemen lainnya dapat ditambahkan di sini -->
-    </div>
+    <hr>
 
     <center>
         <h3>Laporan Barang Masuk</h3>

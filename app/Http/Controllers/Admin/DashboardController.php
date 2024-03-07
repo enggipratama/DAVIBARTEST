@@ -59,7 +59,7 @@ class DashboardController extends Controller
                 ->first();
     
             $totalstok = $dbarang->barang_stok + ($jmlmasuk - $jmlkeluar);
-    
+            
             if ($totalstatus) {
                 $totalreal = $totalstok - $totalpesan;
             } else {
@@ -75,23 +75,23 @@ class DashboardController extends Controller
                 'total_stok' => $totalstok,
                 'total_real' => $totalreal
             ];
-            
-            $statusToCount = ['Pending', 'Dikirim', 'Selesai', 'Dibatalkan'];
+          
+        }
+        $statusToCount = ['Pending', 'Dikirim', 'Selesai', 'Dibatalkan'];
             foreach ($statusToCount as $status) {
                 ${$status . 'Count'} = 0;
             }
-            // Menghitung jumlah setiap status
-            foreach ($statusToCount as $status) {
-                ${$status . 'Count'} = StatusOrderModel::where('status', $status)->count();
-            }            
-            // Menggabungkan variabel-variabel jumlah status ke dalam array $data
-            $data['PendingCount'] = $PendingCount;
-            $data['DikirimCount'] = $DikirimCount;
-            $data['SelesaiCount'] = $SelesaiCount;
-            $data['DibatalkanCount'] = $DibatalkanCount;
-        }
+        foreach ($statusToCount as $status) {
+            ${$status . 'Count'} = StatusOrderModel::where('status', $status)->count();
+        }            
+        // Menggabungkan variabel-variabel jumlah status ke dalam array $data
+        $data['PendingCount'] = $PendingCount;
+        $data['DikirimCount'] = $DikirimCount;
+        $data['SelesaiCount'] = $SelesaiCount;
+        $data['DibatalkanCount'] = $DibatalkanCount;
+        $data['statusToCount'] = $statusToCount;
         // dd($data);
-        return view('Admin.Dashboard.index', ['data' => $data, 'arr' => $arr, 'statusValues' => $statusToCount]);
+        return view('Admin.Dashboard.index', ['data' => $data, 'arr' => $arr]);
     }
 }
 

@@ -55,7 +55,7 @@
         function update(data) {
             $("input[name='idjenisbarangU']").val(data.jenisbarang_id);
             $("input[name='jenisbarangU']").val(data.jenisbarang_nama.replace(/_/g, ' '));
-            $("textarea[name='ketU']").val(data.jenisbarang_ket.replace(/_/g, ' '));
+            $("textarea[name='ketU']").val(data.jenisbarang_keterangan.replace(/_/g, ' '));
         }
 
         function hapus(data) {
@@ -115,7 +115,7 @@
                     },
                     {
                         data: 'ket',
-                        name: 'jenisbarang_ket',
+                        name: 'jenisbarang_keterangan',
                     },
                     {
                         data: 'action',

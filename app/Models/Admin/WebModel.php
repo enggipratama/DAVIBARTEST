@@ -13,6 +13,8 @@ class WebModel extends Model
     protected $fillable = [
         'web_nama',
         'web_logo',
+        'web_alamat',
+        'web_tlpn',
         'web_deskripsi'
     ];
 }

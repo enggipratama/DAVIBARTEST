@@ -86,7 +86,7 @@
                                     <th class="border-bottom-0">Nama</th>
                                     <th class="border-bottom-0">Harga</th>
                                     <th class="border-bottom-0">Jumlah</th>
-                                    <th class="border-bottom-0">Pilih</th>
+                                    <th class="border-bottom-0">Total</th>
                                 </tr>
                             </thead>
                             <tbody>

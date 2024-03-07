@@ -11,6 +11,7 @@ use App\Models\Admin\JenisBarangModel;
 use App\Models\Admin\PesanModel;
 use App\Models\Admin\RoleModel;
 use App\Models\Admin\SatuanModel;
+use App\Models\Admin\WebModel;
 use App\Models\StatusOrderModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -165,7 +166,8 @@ class PesanController extends Controller
 
         public function cetakStruk($id)
     {
-        $data["title"] = "Struk";
+        $data['web'] = WebModel::first();
+        $data["title"] = "Invoice Davibar House";
         $user_id_login = Session::get('user')->user_id;
         
         $results = StatusOrderModel::where('id_user', $user_id_login)
@@ -179,7 +181,7 @@ class PesanController extends Controller
             ->select('*') 
             ->get();
 
-        return view('Admin.Pesan.struk', ['data' => $data, 'results' => $results, 'title' => $data['title']]);
+        return view('Admin.Pesan.struk', ['data' => $data, 'results' => $results, 'title' => $data['title'], 'web' => $data['web']]);
     }
       
 }

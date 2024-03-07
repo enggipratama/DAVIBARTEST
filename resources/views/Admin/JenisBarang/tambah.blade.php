@@ -63,8 +63,7 @@
                     type: "success"
                 });
                 table.ajax.reload(null, false);
-                reset();
-                
+                reset(); 
             }
         });
     }

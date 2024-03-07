@@ -1,80 +1,134 @@
-$html='
-<body>
-<div id="page">
-  <div id="logo">
-    <a href="http://www.danifer.com/"><img src="./HTML Invoice Template_files/invoice_logo.jpg"></a>
-  </div><!--end logo-->
+<!doctype html>
+<html lang="en">
 
-  <div id="address">
+<?php
 
-    <p><strong>'.$company.'</strong><br>
-    <a href="mailto:'.$dbobj->getAdminEmail().'">'.$dbobj->getAdminEmail().'</a>
-    <br><br>
-    Transaction # xxx<br>
-    Created on 2008-10-09<br>
-    </p>
-  </div><!--end address-->
+use App\Models\Admin\BarangkeluarModel;
+use App\Models\Admin\BarangmasukModel;
+use Carbon\Carbon;
+?>
 
-  <div id="content">
-    <p>
-      <strong>Customer Details</strong><br>
-      Name: '.$dbobj->UserFullName().'<br>
-      Email: '.$dbobj->UserEmail().'<br>
-      Contact: '.$dbobj->UserContact().'<br>
-      Payment Type: MasterCard    </p>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- FAVICON -->
+    @if ($web->web_logo == '' || $web->web_logo == 'default.png')
+        <link rel="shortcut icon" type="image/x-icon" href="{{ url('/assets/default/web/default.png') }}" />
+    @else
+        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/web/' . $web->web_logo) }}" />
+    @endif
+
+    <title>{{ $title }}</title>
+
+    <style type="text/css">
+        * {
+            font-family: Verdana, Arial, sans-serif;
+        }
+
+        table {
+            font-size: x-small;
+            text-align: left;
+        }
+
+        tfoot tr td {
+            font-weight: bold;
+            font-size: x-small;
+        }
+
+        .gray {
+            background-color: lightgray
+        }
+
+        hr {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+
+        .logo-container {
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 50px;
+            border-radius: 10%;
+        }
+    </style>
+</head>
+
+<body onload="window.print()">
+    <div class="logo-container">
+        @if ($web->web_logo == '' || $web->web_logo == 'default.png')
+            <img src="{{ url('/assets/default/web/default.png') }}" alt="">
+        @else
+            <img src="{{ asset('storage/web/' . $web->web_logo) }}" alt="">
+        @endif
+        <div class="text-center">
+            <h3 style="font-size: 0.8em;">{{ $web->web_nama }}</h3>
+            <p style="font-size: 0.7em;">{{ $web->web_alamat }}. No.Tlp {{ $web->web_tlpn }}</p>
+        </div>
+    </div>
     <hr>
 
-    <table>
-      <tbody>
-        <tr>
-        <td><strong>Description</strong></td>
-        <td><strong>Qty</strong></td>
-        <td><strong>Unit Price</strong></td>
-        <td><strong>Amount</strong></td>
-        </tr>
-      <tr class="odd">
-        <td>Product 1</td>
-        <td>1</td>
-         <td>Rs 1495.00</td>
-        <td>Rs 1495.00</td>
+    <div style="font-size: 0.7em;">
+        <strong>Kode Invoice: <span style="color: #09d636;">{{ $results->first()->kode_inv }}</span></strong>
+        <br><strong>Dari: </strong>{{ $web->web_nama }}
+        <br>{{ $web->web_alamat }}
+        <br>{{ $web->web_tlpn }}
+    </div>
+    <div style="font-size: 0.7em; ">
+        <br><strong>Ke: </strong>{{ Session::get('user')->user_nmlengkap }}
+        <br>{{ Session::get('user')->user_alamat }}
+        <br>{{ Session::get('user')->user_notlp }}
+        <br>
+        <br><strong>Status: <span
+            style="color: 
+    @if ($results->first()['status'] == 'Pending') yellow;
+    @elseif($results->first()['status'] == 'Dikirim') green;
+    @elseif($results->first()['status'] == 'Selesai') blue;
+    @elseif($results->first()['status'] == 'Dibatalkan') red;
+    @else black; @endif
+">{{ $results->first()['status'] }}</strong></span>
 
-      </tr>
-      <tr class="even">
-        <td>Product 2</td>
-        <td>1</td>
-       <td>Rs 1495.00</td>
-        <td>Rs 1495.00</td>
-      </tr>
-        <tr class="odd">
-          <td>Product 3</td>
-          <td>1</td>
-         <td>Rs 1495.00</td>
-        <td>Rs 1495.00</td>
-        </tr>
+    </div>
+    <br>
 
-        <tr>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td><strong>Total</strong></td>
-          <td><strong>Rs 24485.00</strong></td>
-        </tr>
+    <table width="100%">
+        <thead style="background-color: lightgray;">
+            <tr>
+                <th>Nama</th>
+                <th>Harga</th>
+                <th>Jumlah</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $totalHarga = 0; // Initialize total harga variable outside the loop
+            @endphp
+            @foreach ($results as $result)
+                <tr>
+                    <td>{{ $result->barang_nama }}</td>
+                    <td>Rp. {{ number_format($result->barang_harga, 0) }}</td>
+                    <td>{{ $result->pesan_jumlah }} {{ $result->satuan_nama }}</td>
+                    <td>Rp. {{ number_format($result->pesan_jumlah * $result->barang_harga, 0) }}</td>
+                </tr>
+                @php
+                    $totalHarga += $result->pesan_jumlah * $result->barang_harga; // Accumulate the total harga
+                @endphp
+            @endforeach
+        </tbody>
 
-    </tbody></table>
+        <tfoot>
+            <tr style="background-color: lightgray;">
+                <td colspan="3" align="right"> Total Harga</td>
+                <td colspan="4" align="left"> Rp. {{ number_format($totalHarga, 0) }}</td>
+            </tr>
+        </tfoot>
+    </table>
 
 
-    <hr>
-    <p>
-      Thank you for your order.<br>
-      If you have any questions, please feel free to contact us at <a href="mailto:'.$dbobj->getAdminEmail().'">'.$dbobj->getAdminEmail().'</a>.
-    </p>
+</body>
 
-    <hr>
-    <p>
-      </p><center><small>This communication is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient any use, copying, disclosure, dissemination or distribution is strictly prohibited.
-      <br><br>
-      © '.$dbobj->sitename.' All Rights Reserved
-      </small></center>
-    <p></p>
-  </div><!--end content-->
-</div>
-</body>;
+</html>
