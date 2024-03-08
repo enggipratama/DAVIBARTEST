@@ -166,14 +166,15 @@ public function detail($id)
         return response()->view('errors.404');
     }
     $userInfo = DB::table('tbl_user')
-        ->where('tbl_user.user_id', $statusOrder->id_user)
-        ->first();
+    ->join('tbl_role', 'tbl_user.role_id', '=', 'tbl_role.role_id')
+    ->where('tbl_user.user_id', $statusOrder->id_user)
+    ->first();
     $items = DB::table('tbl_pesan')
         ->join('tbl_barang', 'tbl_barang.barang_id', '=', 'tbl_pesan.pesan_idbarang')
         ->where('tbl_pesan.pesan_idtransaksi', $statusOrder->id)
         ->select('tbl_barang.*', 'tbl_pesan.pesan_jumlah')
         ->get();
-// dd($items);
+// dd($userInfo);
     return view('Admin.Pesan.detail', compact('data', 'statusOrder', 'userInfo', 'items'));
 }
     public function updateStatus(Request $request, $id)

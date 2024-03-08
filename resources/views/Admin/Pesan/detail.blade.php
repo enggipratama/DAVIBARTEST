@@ -23,18 +23,17 @@
                     <div class="text-center chat-image mb-5">
                         <div class="avatar avatar-xxl chat-profile mb-3 rounded">
                             @if ($userInfo->user_foto == 'undraw_profile.svg' || $userInfo->user_foto == '')
-                                <img src="{{ url('/assets/default/users/undraw_profile.svg') }}" alt="profile-user">
+                                <img class="rounded-pill" src="{{ url('/assets/default/users/undraw_profile.svg') }}" alt="profile-user">
                             @else
-                                <img src="{{ asset('storage/users/' . $userInfo->user_foto) }}" alt="profile-user">
+                                <img class="rounded-pill" src="{{ asset('storage/users/' . $userInfo->user_foto) }}" alt="profile-user">
                             @endif
                         </div>
-                        <div class="main-chat-msg-name me-4">
-                            <h5 class="mb-1 text-dark fw-semibold">{{ $userInfo->user_nmlengkap }}</h5>
-                            {{-- <h5 class="text-muted mb-1 text-dark fw-semibold">Sebagai :
-                                {{ $userInfo->role_title }}</h5> --}}
-                        </div>
                     </div>
-
+                    <div class="main-chat-msg-name me-4 text-center">
+                        <h5 class="mb-1 text-dark fw-semibold">{{ $userInfo->user_nmlengkap }}</h5>
+                        <h5 class="text-muted mb-1 text-dark fw-semibold">Sebagai :
+                            {{ $userInfo->role_title }}</h5>
+                    </div>
                     <div>
                         <label class="form-label">Alamat</label>
                         <div class=" input-group" id="alamat">

@@ -25,15 +25,15 @@
                     <div class="text-center chat-image mb-5">
                         <div class="avatar avatar-xxl chat-profile mb-3 brround">
                             @if($data->user_foto == 'undraw_profile.svg' || $data->user_foto == '')
-                            <img src="{{url('/assets/default/users/undraw_profile.svg')}}" alt="profile-user">
+                            <img class="rounded-pill" src="{{url('/assets/default/users/undraw_profile.svg')}}" alt="profile-user">
                             @else
-                            <img src="{{asset('storage/users/'.$data->user_foto)}}" alt="profile-user">
+                            <img class="rounded-pill" src="{{asset('storage/users/'.$data->user_foto)}}" alt="profile-user">
                             @endif
                         </div>
-                        <div class="main-chat-msg-name me-4">
-                            <h5 class="mb-1 text-dark fw-semibold">{{$data->user_nmlengkap}}</h5>
-                            <p class="text-muted mt-0 mb-0 pt-0 fs-13">{{$data->role_title}}</p>
-                        </div>
+                    </div>
+                    <div class="main-chat-msg-name me-4 text-center">
+                        <h5 class="mb-1 text-dark fw-semibold">{{$data->user_nmlengkap}}</h5>
+                        <p class="text-muted mt-0 mb-0 pt-0 fs-13">{{$data->role_title}}</p>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Password Saat Ini</label>
