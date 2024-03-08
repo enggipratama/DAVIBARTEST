@@ -58,7 +58,7 @@
         $("input[name='nmlengkapU']").val(data.user_nmlengkap.replace(/_/g, ' '));
         $("input[name='usernameU']").val(data.user_nama.replace(/_/g, ' '));
         $("input[name='notlpU']").val(data.user_notlp);
-        $("input[name='alamatU']").val(data.user_alamat);
+        $("input[name='alamatU']").val(data.user_alamat.replace(/_/g, ' '));
         $("input[name='emailU']").val(data.user_email);
         $("select[name='roleU']").val(data.role_id);
         $("input[name='flama']").val(data.user_foto);

@@ -21,7 +21,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="notlpU" class="form-label">No Telpon</label>
-                                <input type="text" name="notlpU" class="form-control" placeholder="No Telpon..">
+                                <input type="number" name="notlpU" class="form-control" placeholder="No Telpon..">
                             </div>
                             <div class="form-group">
                                 <label for="alamatU" class="form-label">Alamat</label>
@@ -64,10 +64,10 @@
                             <div class="form-group">
                                 <label for="title" class="form-label">Foto</label>
                                 <center>
-                                    <img src="{{url('/assets/default/users/undraw_profile.svg')}}" width="80%" alt="profile-user" id="outputImgU" class="brround">
+                                    <img src="{{url('/assets/default/users/undraw_profile.svg')}}" width="20%" alt="profile-user" id="outputImgU" class="avatar avatar-xxl brround cover-image">
                                 </center>
                                 <input type="hidden" name="flama" id="flama">
-                                <input class="form-control mt-5" id="GetFileU" name="photoU" type="file" onchange="VerifyFileNameAndFileSizeU()" accept=".png,.jpeg,.jpg,.svg">
+                                <input class="form-control mt-5 " id="GetFileU" name="photoU" type="file" onchange="VerifyFileNameAndFileSizeU()" accept=".png,.jpeg,.jpg,.svg">
                             </div>
                         </div>
                     </div>
@@ -158,7 +158,9 @@
         $("input[name='pwdU']").val('');
         $("input[name='pwdUU']").val('');
         $("input[name='flama']").val('');
-        $("#outputImgU").attr("src", "{{url('/assets/default/users/undraw_profile.svg')}}");
+        if(data.user_foto != 'undraw_profile.svg'){
+            $("#outputImgU").attr("src", "{{asset('storage/users/')}}"+"/"+data.user_foto);
+        }
         $("#GetFileU").val('');
     }
 

@@ -20,7 +20,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="notlp" class="form-label">No Telpon</label>
-                                <input type="text" name="notlp" class="form-control" placeholder="No Telpon..">
+                                <input type="number" name="notlp" class="form-control" placeholder="No Telpon..">
                             </div>
                             <div class="form-group">
                                 <label for="alamat" class="form-label">Alamat</label>
@@ -52,7 +52,7 @@
                             <div class="form-group">
                                 <label for="title" class="form-label">Foto</label>
                                 <center>
-                                    <img src="{{url('/assets/default/users/undraw_profile.svg')}}" width="80%" alt="profile-user" id="outputImg" class="brround">
+                                    <img src="{{url('/assets/default/users/undraw_profile.svg')}}" width="20%" alt="profile-user" id="outputImg" class="avatar avatar-xxl brround cover-image">
                                 </center>
                                 <input class="form-control mt-5" id="GetFile" name="photo" type="file" onchange="VerifyFileNameAndFileSize()" accept=".png,.jpeg,.jpg,.svg">
                             </div>
@@ -135,7 +135,9 @@
         $("input[name='role']").val('');
         $("input[name='pwd']").val('');
         $("input[name='pwdU']").val('');
-        $("#outputImg").attr("src", "{{url('/assets/default/users/undraw_profile.svg')}}");
+        if(data.user_foto != 'undraw_profile.svg'){
+            $("#outputImgU").attr("src", "{{asset('/storage/users/')}}"+"/"+data.user_foto);
+        }
         $("#GetFile").val('');
     }
 

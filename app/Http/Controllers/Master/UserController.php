@@ -24,6 +24,7 @@ class UserController extends Controller
     {
         $data["title"] = "Profile";
         $data["data"] = UserModel::leftJoin('tbl_role', 'tbl_role.role_id', '=', 'tbl_user.role_id')->select()->where('tbl_user.user_id', '=', $user->user_id)->first();
+        // dd($data);
         return view('Master.User.profile', $data);
     }
 
@@ -37,7 +38,7 @@ class UserController extends Controller
                     if ($row->user_foto == "undraw_profile.svg") {
                         $img = '<span class="avatar avatar-lg brround cover-image" data-bs-image-src="' . url('assets/images/users/14.jpg') . '" style="background: url(&quot;' . url('/assets/default/users') . '/' . $row->user_foto . '&quot;) center center;"></span>';
                     } else {
-                        $img = '<span class="avatar avatar-lg brround cover-image" data-bs-image-src="' . url('assets/images/users/14.jpg') . '" style="background: url(&quot;' . asset('storage/users/' . $row->user_foto) . '&quot;) center center;"></span>';
+                        $img = '<span class="avatar avatar-lg brround cover-image" data-bs-image-src="' . url('assets/images/users/14.jpg') . '" style="background: url(&quot;' . asset('/storage/users/' . $row->user_foto) . '&quot;) center center;"></span>';
                     }
 
                     return $img;
