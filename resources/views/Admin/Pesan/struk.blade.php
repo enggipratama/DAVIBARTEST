@@ -14,13 +14,13 @@ use Carbon\Carbon;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- FAVICON -->
-    @if ($web->web_logo == '' || $web->web_logo == 'default.png')
+    @if ($data->web_logo == '' || $data->web_logo == 'default.png')
         <link rel="shortcut icon" type="image/x-icon" href="{{ url('/assets/default/web/default.png') }}" />
     @else
-        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/web/' . $web->web_logo) }}" />
+        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/web/' . $data->web_logo) }}" />
     @endif
 
-    <title>{{ $title }}</title>
+    <title>Invoice Davibar House</title>
 
     <style type="text/css">
         * {
@@ -59,37 +59,37 @@ use Carbon\Carbon;
 
 <body onload="window.print()">
     <div class="logo-container">
-        @if ($web->web_logo == '' || $web->web_logo == 'default.png')
+        @if ($data->web_logo == '' || $data->web_logo == 'default.png')
             <img src="{{ url('/assets/default/web/default.png') }}" alt="">
         @else
-            <img src="{{ asset('storage/web/' . $web->web_logo) }}" alt="">
+            <img src="{{ asset('storage/web/' . $data->web_logo) }}" alt="">
         @endif
         <div class="text-center">
-            <h3 style="font-size: 0.8em;">{{ $web->web_nama }}</h3>
-            <p style="font-size: 0.7em;">{{ $web->web_alamat }}. No.Tlp {{ $web->web_tlpn }}</p>
+            <h3 style="font-size: 0.8em;">{{ $data->web_nama }}</h3>
+            <p style="font-size: 0.7em;">{{ $data->web_alamat }}. No.Tlp {{ $data->web_tlpn }}</p>
         </div>
     </div>
     <hr>
 
     <div style="font-size: 0.7em;">
-        <strong>Kode Invoice: <span style="color: #09d636;">{{ $results->first()->kode_inv }}</span></strong>
-        <br><strong>Dari: </strong>{{ $web->web_nama }}
-        <br>{{ $web->web_alamat }}
-        <br>{{ $web->web_tlpn }}
+        <strong>Kode Invoice: <span style="color: #09d636;">{{ $statusOrder->kode_inv }}</span></strong>
+        <br><strong>Dari: </strong>{{ $data->web_nama }}
+        <br>{{ $data->web_alamat }}
+        <br>{{ $data->web_tlpn }}
     </div>
     <div style="font-size: 0.7em; ">
-        <br><strong>Ke: </strong>{{ Session::get('user')->user_nmlengkap }}
-        <br>{{ Session::get('user')->user_alamat }}
-        <br>{{ Session::get('user')->user_notlp }}
+        <br><strong>Ke: </strong>{{ $userInfo->user_nmlengkap }}
+        <br>{{ $userInfo->user_alamat }}
+        <br>{{ $userInfo->user_notlp }}
         <br>
         <br><strong>Status: <span
             style="color: 
-    @if ($results->first()['status'] == 'Pending') yellow;
-    @elseif($results->first()['status'] == 'Dikirim') green;
-    @elseif($results->first()['status'] == 'Selesai') blue;
-    @elseif($results->first()['status'] == 'Dibatalkan') red;
+    @if ($statusOrder->status == 'Pending') yellow;
+    @elseif($statusOrder->status == 'Dikirim') green;
+    @elseif($statusOrder->status == 'Selesai') blue;
+    @elseif($statusOrder->status == 'Dibatalkan') red;
     @else black; @endif
-">{{ $results->first()['status'] }}</strong></span>
+">{{ $statusOrder->status }}</strong></span>
 
     </div>
     <br>
@@ -107,15 +107,15 @@ use Carbon\Carbon;
             @php
                 $totalHarga = 0; // Initialize total harga variable outside the loop
             @endphp
-            @foreach ($results as $result)
+            @foreach ($items as $items)
                 <tr>
-                    <td>{{ $result->barang_nama }}</td>
-                    <td>Rp. {{ number_format($result->barang_harga, 0, ',', '.') }}</td>
-                    <td>{{ $result->pesan_jumlah }} {{ $result->satuan_nama }}</td>
-                    <td>Rp. {{ number_format($result->pesan_jumlah * $result->barang_harga, 0, ',', '.') }}</td>
+                    <td>{{ $items->barang_nama }}</td>
+                    <td>Rp. {{ number_format($items->barang_harga, 0, ',', '.') }}</td>
+                    <td>{{ $items->pesan_jumlah }} {{ $items->satuan_nama }}</td>
+                    <td>Rp. {{ number_format($items->pesan_jumlah * $items->barang_harga, 0, ',', '.') }}</td>
                 </tr>
                 @php
-                    $totalHarga += $result->pesan_jumlah * $result->barang_harga; // Accumulate the total harga
+                    $totalHarga += $items->pesan_jumlah * $items->barang_harga; // Accumulate the total harga
                 @endphp
             @endforeach
         </tbody>

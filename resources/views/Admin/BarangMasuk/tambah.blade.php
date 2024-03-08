@@ -1,6 +1,6 @@
 <!-- MODAL TAMBAH -->
 <div class="modal fade" data-bs-backdrop="static" id="modaldemo8">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content modal-content-demo">
             <div class="modal-header">
                 <h6 class="modal-title">Tambah Barang Masuk</h6><button onclick="reset()" aria-label="Close"
@@ -76,16 +76,14 @@
                 </div>
 
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer justify-content-start">
                 <button class="btn btn-primary d-none" id="btnLoader" type="button" disabled="">
                     <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                     Loading...
                 </button>
-                <a href="javascript:void(0)" onclick="checkForm()" id="btnSimpan" class="btn btn-primary">Simpan <i
-                        class="fe fe-check"></i></a>
-                <a href="javascript:void(0)" class="btn btn-light" onclick="reset()" data-bs-dismiss="modal">Batal
-                    <i class="fe fe-x"></i></a>
-            </div>
+                <a href="javascript:void(0)" onclick="checkForm()" id="btnSimpan" class="btn btn-primary">Simpan <i class="fe fe-check"></i></a>
+                <a href="javascript:void(0)" class="btn btn-light" onclick="reset()" data-bs-dismiss="modal">Batal <i class="fe fe-x"></i></a>
+            </div>            
         </div>
     </div>
 </div>

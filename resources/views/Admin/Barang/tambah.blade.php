@@ -1,6 +1,6 @@
 <!-- MODAL TAMBAH -->
 <div class="modal fade" data-bs-backdrop="static" id="modaldemo8">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content modal-content-demo">
             <div class="modal-header">
                 <h6 class="modal-title">Tambah Barang</h6><button onclick="reset()" aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>

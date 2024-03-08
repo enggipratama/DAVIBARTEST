@@ -156,27 +156,19 @@ class PesanController extends Controller
 
 
 public function detail($id)
-{
-    $data = "Detail Pesanan";
-    $statusOrder = DB::table('tbl_status_order')
-        ->where('tbl_status_order.kode_inv', $id)
-        ->first();
+    {
+        $data = "Detail Pesanan";
+        $statusOrder = $this->getStatusOrder($id);
 
-    if (!$statusOrder) {
-        return response()->view('errors.404');
+        if (!$statusOrder) {
+            return response()->view('errors.404');
+        }
+
+        $userInfo = $this->getUserInfo($statusOrder->id_user);
+        $items = $this->getItems($statusOrder->id);
+
+        return view('Admin.Pesan.detail', compact('data', 'statusOrder', 'userInfo', 'items'));
     }
-    $userInfo = DB::table('tbl_user')
-    ->join('tbl_role', 'tbl_user.role_id', '=', 'tbl_role.role_id')
-    ->where('tbl_user.user_id', $statusOrder->id_user)
-    ->first();
-    $items = DB::table('tbl_pesan')
-        ->join('tbl_barang', 'tbl_barang.barang_id', '=', 'tbl_pesan.pesan_idbarang')
-        ->where('tbl_pesan.pesan_idtransaksi', $statusOrder->id)
-        ->select('tbl_barang.*', 'tbl_pesan.pesan_jumlah')
-        ->get();
-// dd($userInfo);
-    return view('Admin.Pesan.detail', compact('data', 'statusOrder', 'userInfo', 'items'));
-}
     public function updateStatus(Request $request, $id)
     {
             $request->validate([
@@ -187,24 +179,46 @@ public function detail($id)
             $results->update(['status' => $newStatus]);
             return response()->json(['message' => 'Status berhasil diperbarui']);
         }
-    public function cetakStruk($id)
+        public function cetakStruk($id)
+        {
+            $data = WebModel::first();
+            $statusOrder = $this->getStatusOrder($id);
+    
+            if (!$statusOrder) {
+                return response()->view('errors.404');
+            }
+    
+            $userInfo = $this->getUserInfo($statusOrder->id_user);
+            $items = $this->getItems($statusOrder->id);
+    
+            return view('Admin.Pesan.struk', compact('data', 'statusOrder', 'userInfo', 'items'));
+        }
+
+        private function getStatusOrder($id)
     {
-        $data['web'] = WebModel::first();
-        $data["title"] = "Invoice Davibar House";
-        $user_id_login = Session::get('user')->user_id;
-        
-        $results = StatusOrderModel::where('id_user', $user_id_login)
+        return DB::table('tbl_status_order')
             ->where('tbl_status_order.kode_inv', $id)
-            ->join('tbl_pesan', function ($join) {
-                $join->on('tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
-                    ->whereColumn('tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi');
-            })
+            ->first();
+    }
+
+    // Metode untuk mendapatkan data user info
+    private function getUserInfo($userId)
+    {
+        return DB::table('tbl_user')
+            ->join('tbl_role', 'tbl_user.role_id', '=', 'tbl_role.role_id')
+            ->where('tbl_user.user_id', $userId)
+            ->first();
+    }
+
+    // Metode untuk mendapatkan data items
+    private function getItems($orderId)
+    {
+        return DB::table('tbl_pesan')
             ->join('tbl_barang', 'tbl_barang.barang_id', '=', 'tbl_pesan.pesan_idbarang')
             ->join('tbl_satuan', 'tbl_satuan.satuan_id', '=', 'tbl_barang.satuan_id')
-            ->select('*') 
+            ->where('tbl_pesan.pesan_idtransaksi', $orderId)
+            ->select('tbl_barang.*', 'tbl_satuan.satuan_nama', 'tbl_pesan.pesan_jumlah')
             ->get();
-
-        return view('Admin.Pesan.struk', ['data' => $data, 'results' => $results, 'title' => $data['title'], 'web' => $data['web']]);
     }
       
 }

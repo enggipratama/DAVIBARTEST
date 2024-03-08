@@ -101,7 +101,7 @@
                                         </td>
                                         <td>{{ $result->barang_nama }}</td>
                                         <td>Rp. {{ number_format($result->barang_harga, 0) }}</td>
-                                        <td>{{ $result->pesan_jumlah }}</td>
+                                        <td>{{ $result->pesan_jumlah }} {{ $result->satuan_nama }}</td>
                                         <td>Rp. {{ number_format($result->pesan_jumlah * $result->barang_harga, 0) }}</td>
                                     </tr>
                                     @php
