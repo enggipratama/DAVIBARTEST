@@ -15,6 +15,7 @@ use App\Models\Admin\WebModel;
 use App\Models\StatusOrderModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -96,75 +97,96 @@ class PesanController extends Controller
 
         return response()->json(['success', "berhasil"]);
     }
-    public function status(){
-        $data["title"] = "Status Pesanan";
+    public function status()
+{
+    $data["title"] = "Status Pesanan";
 
-        $dataTransaksi = StatusOrderModel::with('pesan', 'pesan.barang')->orderBy('created_at', 'desc')->get();
+    $dataTransaksi = StatusOrderModel::with('pesan', 'pesan.barang')->orderBy('created_at', 'desc')->get();
 
-        $arr = [];
+    $arr = [];
 
-        foreach ($dataTransaksi as $dt) {
-            $total_harga = 0; // Inisialisasi total harga untuk setiap transaksi
-            $total_jumlah = 0; // Inisialisasi total jumlah untuk setiap transaksi
+    foreach ($dataTransaksi as $dt) {
+        $total_harga = 0; // Inisialisasi total harga untuk setiap transaksi
+        $total_jumlah = 0; // Inisialisasi total jumlah untuk setiap transaksi
 
-            foreach ($dt->pesan as $detail) {
-                foreach ($detail->barang as $d) {
-                    $total_harga += ($detail->pesan_jumlah * intval($d->barang_harga));
-                    $total_jumlah += $detail->pesan_jumlah;
-                }
+        foreach ($dt->pesan as $detail) {
+            foreach ($detail->barang as $d) {
+                $total_harga += ($detail->pesan_jumlah * intval($d->barang_harga));
+                $total_jumlah += $detail->pesan_jumlah;
             }
-
-            $arr[] = [
-                'namauser'=> Session::get('user')->user_nmlengkap,
-                'alamat'=> Session::get('user')->user_alamat,
-                'status'=> $dt->status,
-                'date'=> $dt->created_at,
-                'id_user' => $dt->id_user,
-                'id' => $dt->id,
-                'total_harga' => $total_harga,
-                'total_jumlah' => $total_jumlah,
-                'kode_pesan' => $dt->kode_inv
-            ];
         }
 
-        return view ('Admin.Pesan.statustransaksi', ['data' => $data, 'arr' => $arr, 'title' => $data['title']]);
+        $ownerName = '';
+        $ownerAddress = '';
+        $status = '';
+
+        // Ambil data pemilik pesanan dan status dari tabel yang sesuai
+        if (in_array(Session::get('user')->role_id, ['1', '2', '4'])) {
+            // Jika pemilik pesanan adalah pengguna, dapatkan namanya dan alamatnya
+            $owner = DB::table('tbl_user')->where('user_id', $dt->id_user)->first();
+            if ($owner) {
+                $ownerName = $owner->user_nmlengkap;
+                $ownerAddress = $owner->user_alamat;
+            }
+
+            // Ambil status pesanan
+            $status = $dt->status;
+        } else if (Session::get('user')->user_id === $dt->id_user) {
+            // Jika bukan role 1, 2, atau 4, tampilkan data sesuai yang dimiliki user
+            $ownerName = Session::get('user')->user_nmlengkap;
+            $ownerAddress = Session::get('user')->user_alamat;
+            $status = $dt->status;
+        }
+
+        $arr[] = [
+            'namauser' => $ownerName,
+            'alamat' => $ownerAddress,
+            'status' => $status,
+            'date' => $dt->created_at,
+            'id_user' => $dt->id_user,
+            'id' => $dt->id,
+            'total_harga' => $total_harga,
+            'total_jumlah' => $total_jumlah,
+            'kode_pesan' => $dt->kode_inv
+        ];
     }
 
-    public function detail($id){
-        
-        $data["title"] = "Detail Pesanan";
-        $user_id_login = Session::get('user')->user_id;
-        
-        $results = StatusOrderModel::where('id_user', $user_id_login)
-            ->where('tbl_status_order.kode_inv', $id)
-            ->join('tbl_pesan', function ($join) {
-                $join->on('tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
-                    ->whereColumn('tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi');
-            })
-            ->join('tbl_barang', 'tbl_barang.barang_id', '=', 'tbl_pesan.pesan_idbarang')
-            ->join('tbl_satuan', 'tbl_satuan.satuan_id', '=', 'tbl_barang.satuan_id')
-            ->select('*') 
-            ->get();
+    return view('Admin.Pesan.statustransaksi', ['data' => $data, 'arr' => $arr, 'title' => $data['title']]);
+}
 
-            // dd($results);
 
-        return view('Admin.Pesan.detail', ['data' => $data, 'results' => $results, 'title' => $data['title']]);
-    }      
+public function detail($id)
+{
+    $data = "Detail Pesanan";
+    $statusOrder = DB::table('tbl_status_order')
+        ->where('tbl_status_order.kode_inv', $id)
+        ->first();
+
+    if (!$statusOrder) {
+        return response()->view('errors.404');
+    }
+    $userInfo = DB::table('tbl_user')
+        ->where('tbl_user.user_id', $statusOrder->id_user)
+        ->first();
+    $items = DB::table('tbl_pesan')
+        ->join('tbl_barang', 'tbl_barang.barang_id', '=', 'tbl_pesan.pesan_idbarang')
+        ->where('tbl_pesan.pesan_idtransaksi', $statusOrder->id)
+        ->select('tbl_barang.*', 'tbl_pesan.pesan_jumlah')
+        ->get();
+// dd($items);
+    return view('Admin.Pesan.detail', compact('data', 'statusOrder', 'userInfo', 'items'));
+}
     public function updateStatus(Request $request, $id)
-        {
-            // Validasi permintaan jika diperlukan
+    {
             $request->validate([
-                'status' => 'required|in:Pending,Dikirim,Selesai,Dibatalkan', // Sesuaikan dengan nilai enum status Anda
+                'status' => 'required|in:Pending,Dikirim,Selesai,Dibatalkan',
             ]);
             $results = StatusOrderModel::where('tbl_status_order.kode_inv', $id)->first();
-            // Ambil nilai status dari permintaan
             $newStatus = $request->input('status');
-            // Lakukan perubahan status pada data di database, misalnya:
             $results->update(['status' => $newStatus]);
             return response()->json(['message' => 'Status berhasil diperbarui']);
         }
-
-        public function cetakStruk($id)
+    public function cetakStruk($id)
     {
         $data['web'] = WebModel::first();
         $data["title"] = "Invoice Davibar House";

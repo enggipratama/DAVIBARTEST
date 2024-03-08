@@ -123,16 +123,16 @@
                     name: 'user_nmlengkap',
                 },
                 {
+                    data: 'user_nama',
+                    name: 'user_nama',
+                },
+                {
                     data: 'user_notlp',
                     name: 'user_notlp',
                 },
                 {
                     data: 'user_alamat',
                     name: 'user_alamat',
-                },
-                {
-                    data: 'user_nama',
-                    name: 'user_nama',
                 },
                 {
                     data: 'user_email',

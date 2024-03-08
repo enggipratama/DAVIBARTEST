@@ -1,13 +1,13 @@
-@extends('Master.Layouts.app', ['title' => $title])
+@extends('Master.Layouts.app', ['title' => $data])
 
 @section('content')
     <!-- PAGE-HEADER -->
     <div class="page-header">
-        <h1 class="page-title">{{ $title }}</h1>
+        <h1 class="page-title">{{ $data }}</h1>
         <div>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item text-gray">Davibar House</li>
-                <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $data }}</li>
             </ol>
         </div>
     </div>
@@ -21,18 +21,17 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center chat-image mb-5">
-                        <div class="avatar avatar-xxl chat-profile mb-3 brround">
-                            @if (Session::get('user')->user_foto == 'undraw_profile.svg' || Session::get('user')->user_foto == '')
+                        <div class="avatar avatar-xxl chat-profile mb-3 rounded">
+                            @if ($userInfo->user_foto == 'undraw_profile.svg' || $userInfo->user_foto == '')
                                 <img src="{{ url('/assets/default/users/undraw_profile.svg') }}" alt="profile-user">
                             @else
-                                <img src="{{ asset('storage/users/' . Session::get('user')->user_foto) }}"
-                                    alt="profile-user">
+                                <img src="{{ asset('storage/users/' . $userInfo->user_foto) }}" alt="profile-user">
                             @endif
                         </div>
                         <div class="main-chat-msg-name me-4">
-                            <h5 class="mb-1 text-dark fw-semibold">{{ Session::get('user')->user_nmlengkap }}</h5>
-                            <h5 class="text-muted mb-1 text-dark fw-semibold">Sebagai :
-                                {{ Session::get('user')->role_title }}</h5>
+                            <h5 class="mb-1 text-dark fw-semibold">{{ $userInfo->user_nmlengkap }}</h5>
+                            {{-- <h5 class="text-muted mb-1 text-dark fw-semibold">Sebagai :
+                                {{ $userInfo->role_title }}</h5> --}}
                         </div>
                     </div>
 
@@ -42,7 +41,7 @@
                             <a class="input-group-text bg-white">
                                 <i class="fa fa-home"></i>
                             </a>
-                            <textarea class="form-control" id="alamat" rows="2" name="alamat" disabled>{{ Session::get('user')->user_alamat }}</textarea>
+                            <textarea class="form-control" id="alamat" rows="2" name="alamat" disabled>{{ $userInfo->user_alamat }}</textarea>
                         </div>
                     </div>
                     <div>
@@ -52,7 +51,7 @@
                                 <i class="fa fa-phone"></i>
                             </a>
                             <input class="form-control" id="notlp" type="text" name="notlp"
-                                value="{{ Session::get('user')->user_notlp }}" disabled>
+                                value="{{ $userInfo->user_notlp }}" disabled>
                         </div>
                     </div>
                     <div>
@@ -62,7 +61,7 @@
                                 <i class="fa fa-envelope"></i>
                             </a>
                             <input class="form-control" id="email" type="text" name="email"
-                                value="{{ Session::get('user')->user_email }}" disabled>
+                                value="{{ $userInfo->user_email }}" disabled>
                         </div>
                     </div>
 
@@ -73,8 +72,7 @@
             <div class="card">
                 <div class="card-header justify-content-between">
                     <h3 class="card-title">List Barang</h3>
-                    <h3 class="card-title">Kode : <span
-                            style="color: rgb(15, 209, 41);">{{ $results->first()->kode_inv }}</span>
+                    <h3 class="card-title">Kode : <span style="color: rgb(15, 209, 41);">{{ $statusOrder->kode_inv }}</span>
                     </h3>
                 </div>
                 <div class="card-body">
@@ -93,7 +91,7 @@
                                 @php
                                     $totalHarga = 0; // Initialize total harga variable outside the loop
                                 @endphp
-                                @foreach ($results as $result)
+                                @foreach ($items as $result)
                                     <tr>
                                         <td class="text-center">
                                             <a data-bs-effect="effect-super-scaled" data-bs-toggle="modal"
@@ -104,7 +102,7 @@
                                         </td>
                                         <td>{{ $result->barang_nama }}</td>
                                         <td>Rp. {{ number_format($result->barang_harga, 0) }}</td>
-                                        <td>{{ $result->pesan_jumlah }} {{ $result->satuan_nama }}</td>
+                                        <td>{{ $result->pesan_jumlah }}</td>
                                         <td>Rp. {{ number_format($result->pesan_jumlah * $result->barang_harga, 0) }}</td>
                                     </tr>
                                     @php
@@ -120,23 +118,28 @@
                         <div id="total-harga">Total Harga: Rp. {{ number_format($totalHarga, 0) }}</div>
                     </h3>
                     <div class="d-flex justify-content-center">
-                        <span id="statusBadge" class="badge bg-warning badge-sm me-1 mb-1 mt-1">
-                            {{ $results->first()['status'] }}
+                        <span id="statusBadge" 
+                            class="badge
+                            @if ($statusOrder->status == 'Pending') bg-warning
+                            @elseif($statusOrder->status == 'Dikirim') bg-success
+                            @elseif($statusOrder->status == 'Dibatalkan') bg-danger
+                            @elseif($statusOrder->status == 'Selesai') bg-primary @endif badge-sm me-1 mb-1 mt-1">
+                            {{ $statusOrder->status }}
                         </span>
                     </div>
                 </div>
                 <div class="card-header justify-content-between">
-                    <a href="{{ route('cetakStruk', ['id' => $results->first()->kode_inv]) }}" class="btn btn-success" target="_blank">Print Invoice</a>
+                    <a href="{{ route('cetakStruk', ['id' => $statusOrder->kode_inv]) }}" class="btn btn-success"
+                        target="_blank">Print Invoice</a>
                     @if (Session::get('user')->role_id != 3)
                         <div class="d-flex">
-                            <form method="post"
-                                action="{{ route('update.status', ['id' => $results->first()->kode_inv]) }}">
+                            <form method="post" action="{{ route('update.status', ['id' => $statusOrder->kode_inv]) }}">
                                 @csrf
                                 <select name="status" class="form-control">
                                     <option value="">Status</option>
                                     @foreach (App\Models\StatusOrderModel::getStatusOptions() as $value => $label)
                                         <option value="{{ $value }}"
-                                            {{ $results->first()['status'] == $value ? 'selected' : '' }}>
+                                            {{ $statusOrder->status == $value ? 'selected' : '' }}>
                                             {{ $label }}
                                         </option>
                                     @endforeach
@@ -164,7 +167,7 @@
     function submit() {
         var selectedStatus = document.querySelector('select[name="status"]').value;
         if (selectedStatus) {
-            fetch('{{ route('update.status', ['id' => $results->first()->kode_inv]) }}', {
+            fetch('{{ route('update.status', ['id' => $statusOrder->kode_inv]) }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -222,34 +225,33 @@
     }
 
     function updateStatus() {
-    // Lakukan permintaan AJAX ke server untuk mendapatkan status terbaru
-    $.ajax({
-        url: '{{ route('update.status', ['id' => $results->first()->kode_inv]) }}', // Ganti dengan URL sesuai kebutuhan Anda
-        method: 'GET',
-        success: function(response) {
-            // Ambil status dari respons server
-            var newStatus = document.querySelector('select[name="status"]').value;
+        // Lakukan permintaan AJAX ke server untuk mendapatkan status terbaru
+        $.ajax({
+            url: '{{ route('update.status', ['id' => $statusOrder->kode_inv]) }}', // Ganti dengan URL sesuai kebutuhan Anda
+            method: 'GET',
+            success: function(response) {
+                // Ambil status dari respons server
+                var newStatus = document.querySelector('select[name="status"]').value;
 
-            // Cetak nilai status ke konsol untuk pemantauan
-            console.log("Current status:", newStatus);
+                // Cetak nilai status ke konsol untuk pemantauan
+                console.log("Current status:", newStatus);
 
-            // Memperbarui status badge
-            $('#statusBadge').removeClass().addClass('badge badge-sm me-1 mb-1 mt-1');
+                // Memperbarui status badge
+                $('#statusBadge').removeClass().addClass('badge badge-sm me-1 mb-1 mt-1');
 
-            if (newStatus == 'Pending') {
-                $('#statusBadge').addClass(' bg-warning ').text(newStatus);
-            } else if (newStatus == 'Dikirim') {
-                $('#statusBadge').addClass(' bg-success ').text(newStatus);
-            } else if (newStatus == 'Dibatalkan') {
-                $('#statusBadge').addClass(' bg-danger ').text(newStatus);
-            } else if (newStatus == 'Selesai') {
-                $('#statusBadge').addClass(' bg-primary ').text(newStatus);
+                if (newStatus == 'Pending') {
+                    $('#statusBadge').addClass(' bg-warning ').text(newStatus);
+                } else if (newStatus == 'Dikirim') {
+                    $('#statusBadge').addClass(' bg-success ').text(newStatus);
+                } else if (newStatus == 'Dibatalkan') {
+                    $('#statusBadge').addClass(' bg-danger ').text(newStatus);
+                } else if (newStatus == 'Selesai') {
+                    $('#statusBadge').addClass(' bg-primary ').text(newStatus);
+                }
+            },
+            error: function(error) {
+                console.error("Error fetching status:", error);
             }
-        },
-        error: function(error) {
-            console.error("Error fetching status:", error);
-        }
-    });
-}
-
+        });
+    }
 </script>

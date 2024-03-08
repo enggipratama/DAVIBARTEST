@@ -38,7 +38,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($arr as $a)
-                                    @if (Session::get('user')->user_id === $a['id_user'])
+                                @if (in_array(Session::get('user')->role_id, ['1', '2', '4']) || Session::get('user')->user_id === $a['id_user'])
                                         <tr>
                                             <td>{{ $a['namauser'] }}</td>
                                             <td>{{ $a['alamat'] }}</td>
