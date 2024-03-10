@@ -60,15 +60,15 @@
                                         <td>Rp. {{ number_format($product['harga'], 0) }}</td>
                                         <td>
                                             <input type="number" name="quantity" id="quantity_{{ $product['barang_id'] }}"
-                                                value="0" min="1" max="{{ $product['total_stok'] }}"
-                                                data-max-stok="{{ $product['total_stok'] }}"
+                                                value="0" min="1" max="{{ $product['total_real'] }}"
+                                                data-max-stok="{{ $product['total_real'] }}"
                                                 onchange="updateAddToCartButton({{ $product['barang_id'] }})"
                                                 oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                                                 style="width: 50px;">
                                         </td>
                                         <td>
                                             <div class="d-flex justify-content-center">
-                                                @if ($product['total_stok'] > 0)
+                                                @if ($product['total_real'] > 0)
                                                     <button class="btn" id="addToCartButton_{{ $product['barang_id'] }}"
                                                         onclick="addToCart({{ $product['barang_id'] }}, '{{ $product['nama'] }}', {{ $product['harga'] }})"
                                                         disabled>Pilih</button>
@@ -115,7 +115,6 @@
                                                 }
                                             }
                                         </script>
-
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -142,23 +141,38 @@
                                 </tr>
                             </thead>
                             <tbody id="cart-items">
-                                <!-- Rincian produk dalam keranjang akan ditampilkan di sini -->
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="card-header justify-content-between">
                     <h3 class="card-title">
-                        <div id="total-harga">Total Harga: <span style="color: rgb(15, 209, 41);">Rp. 0 </span></div>
+                        <div id="total-harga">
+                            <span>Total : <span id="total-harga-value" style="color: rgb(15, 209, 41);">Rp. 0 </span></span>
+                            @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
+                                <br>
+                                <br>
+                                <span>Disc: <span id="diskon-value" style="color: rgb(209, 77, 15);">Rp. -0</span></span>
+                            @endif
+                        </div>
                     </h3>
                 </div>
+                @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
+                    <div class="card-header justify-content-around">
+                        <div class="input-group">
+                            <span class="input-group-text">Diskon Rp.</span>
+                            <input nama="diskon" min="0" value="0" type="number" class="form-control"
+                                id="diskon" placeholder="Diskon" style="width: 150px;" oninput="updateTotalHarga()">
+                        </div>
+                    </div>
+                @endif
                 <div class="card-header justify-content-around">
-                    <button class="btn btn-primary d-none" id="btnLoaderU" type="button" disabled="">
-                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                        Loading...
+                    <button class="btn btn-warning d-none" id="btnLoaderU" type="button" disabled="">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading..
                     </button>
                     <a href="javascript:void(0)" onclick="check()" id="btnSimpanU" class="btn btn-primary">Checkout
-                        <i class="fe fe-check"></i></a>
+                    </a>
                 </div>
             </div>
         </div>
@@ -199,8 +213,8 @@
                     return total + item.quantity * item.harga;
                 }, 0);
                 updateCartView();
-                var totalHargaElement = document.getElementById('total-harga');
-                totalHargaElement.innerHTML = 'Total Harga: <span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga
+                var totalHargaElement = document.getElementById('total-harga-value');
+                totalHargaElement.innerHTML = '<span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga
                     .toLocaleString() + '</span>';
             }
 
@@ -233,8 +247,8 @@
                 }, 0);
                 var newTotalHarga = totalHargaSebelumnya - totalHarga;
                 newTotalHarga = Math.max(0, newTotalHarga);
-                var totalHargaElement = document.getElementById('total-harga');
-                totalHargaElement.innerHTML = 'Total Harga: <span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga
+                var totalHargaElement = document.getElementById('total-harga-value');
+                totalHargaElement.innerHTML = '<span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga
                     .toLocaleString() + '</span>';
                 delete cartItems[barang_id];
                 updateCartView();
@@ -275,7 +289,8 @@
             }
 
             function addToPesan() {
-                // Menggunakan jQuery untuk mendapatkan data dari tabel
+                var diskoninput = document.getElementById('diskon');
+                var diskon = diskoninput ? parseInt(diskoninput.value, 10) : 0;
                 const tableData = [];
                 var fd = new FormData();
 
@@ -286,6 +301,7 @@
 
                 fd.append('_token', '{{ csrf_token() }}');
                 fd.append('data', tableData);
+                fd.append('diskon', diskon); // Tambahkan nilai diskon ke FormData
 
                 $.ajax({
                     type: 'POST',
@@ -298,7 +314,6 @@
                         window.location.href = "{{ route('statustransaksi') }}";
                     },
                     error: function(error) {
-                        n
                         console.error(error);
                     }
                 });
@@ -319,6 +334,24 @@
                     title: "Item Order Kosong",
                     type: "warning"
                 });
+            }
+
+            function updateTotalHarga() {
+                var diskonInput = document.getElementById('diskon');
+                var diskonValue = parseInt(diskonInput.value) || 0;
+
+                var newTotalHarga = Object.values(cartItems).reduce(function(total, item) {
+                    return total + item.quantity * item.harga;
+                }, 0);
+
+                // Kurangkan diskon dari total harga
+                newTotalHarga -= diskonValue;
+
+                // Tampilkan total harga yang baru
+                var totalHargaElement = document.getElementById('total-harga-value');
+                totalHargaElement.innerHTML = 'Rp. ' + newTotalHarga.toLocaleString();
+                var diskonValueElement = document.getElementById('diskon-value');
+                diskonValueElement.innerHTML = 'Rp. -' + diskonValue.toLocaleString();
             }
         </script>
     @endsection

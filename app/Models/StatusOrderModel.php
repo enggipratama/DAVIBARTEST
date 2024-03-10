@@ -14,7 +14,9 @@ class StatusOrderModel extends Model
     protected $table = "tbl_status_order";
     protected $fillable = [
         'id_user',
+        'diskon',
         'status',
+        'status_tanggal',
         'kode_inv'
     ];
 

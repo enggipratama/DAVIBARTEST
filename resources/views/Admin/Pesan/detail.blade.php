@@ -23,9 +23,11 @@
                     <div class="text-center chat-image mb-5">
                         <div class="avatar avatar-xxl chat-profile mb-3 rounded">
                             @if ($userInfo->user_foto == 'undraw_profile.svg' || $userInfo->user_foto == '')
-                                <img class="rounded-pill" src="{{ url('/assets/default/users/undraw_profile.svg') }}" alt="profile-user">
+                                <img class="rounded-pill" src="{{ url('/assets/default/users/undraw_profile.svg') }}"
+                                    alt="profile-user">
                             @else
-                                <img class="rounded-pill" src="{{ asset('storage/users/' . $userInfo->user_foto) }}" alt="profile-user">
+                                <img class="rounded-pill" src="{{ asset('storage/users/' . $userInfo->user_foto) }}"
+                                    alt="profile-user">
                             @endif
                         </div>
                     </div>
@@ -71,7 +73,8 @@
             <div class="card">
                 <div class="card-header justify-content-between">
                     <h3 class="card-title">List Barang</h3>
-                    <h3 class="card-title">Kode : <span style="color: rgb(15, 209, 41);">{{ $statusOrder->kode_inv }}</span>
+                    <h3 class="card-title">Kode : <span
+                            style="color: rgb(15, 209, 41);">{{ $statusOrder->kode_inv }}</span>
                     </h3>
                 </div>
                 <div class="card-body">
@@ -114,10 +117,11 @@
                 </div>
                 <div class="card-header justify-content-between">
                     <h3 class="card-title">
-                        <div id="total-harga">Total Harga: Rp. {{ number_format($totalHarga, 0) }}</div>
+                        <div id="total-harga"><span>Total : <span id="total-harga" style="color: rgb(15, 209, 41);">  Rp. {{ number_format($totalHarga-$statusOrder->diskon, 0) }}</span></span><br><br>
+                        <div id="total-harga">Disc : <span id="total-harga" style="color: rgb(228, 115, 9);"> Rp. -{{ number_format($statusOrder->diskon, 0) }}</span></span></div>
                     </h3>
                     <div class="d-flex justify-content-center">
-                        <span id="statusBadge" 
+                        <span id="statusBadge"
                             class="badge
                             @if ($statusOrder->status == 'Pending') bg-warning
                             @elseif($statusOrder->status == 'Dikirim') bg-success
@@ -127,10 +131,22 @@
                         </span>
                     </div>
                 </div>
+                @if ($statusOrder->status_tanggal)
+                    <div class="text-center mt-2" >
+                        Update :
+                        {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('D MMMM YYYY') }}
+                        /
+                        {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('A')) }}
+                    </div>
+                @else
+                    <div class="text-center mt-2">
+                        -
+                    </div>
+                @endif
                 <div class="card-header justify-content-between">
                     <a href="{{ route('cetakStruk', ['id' => $statusOrder->kode_inv]) }}" class="btn btn-success"
                         target="_blank">Print Invoice</a>
-                    @if (Session::get('user')->role_id != 3)
+                        @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
                         <div class="d-flex">
                             <form method="post" action="{{ route('update.status', ['id' => $statusOrder->kode_inv]) }}">
                                 @csrf

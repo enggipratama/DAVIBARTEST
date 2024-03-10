@@ -13,6 +13,7 @@ use App\Models\Admin\RoleModel;
 use App\Models\Admin\SatuanModel;
 use App\Models\Admin\WebModel;
 use App\Models\StatusOrderModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +29,7 @@ class PesanController extends Controller
     {
         $data["title"] = "Pesan";
         $dataBarang = BarangModel::orderBy('created_at', 'desc')->paginate();
+        
         $arr = [];
         foreach ($dataBarang as $dbarang) {
             $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')->where('tbl_barangmasuk.barang_kode', '=', $dbarang->barang_kode)->sum('tbl_barangmasuk.bm_jumlah');
@@ -67,36 +69,39 @@ class PesanController extends Controller
         return view('Admin.Pesan.index', ['data' => $data, 'arr' => $arr]);
     }
 
-    public function addToPesan(Request $request){
+    public function addToPesan(Request $request) {
         $userId = Session::get('user')->user_id;
-
+    
         $dataArray = explode(",", $request->data);
         $resultArray = [];
-
+    
         for ($i = 0; $i < count($dataArray); $i += 2) {
             $resultArray[] = [
                 "jml" => $dataArray[$i],
                 "idBarang" => $dataArray[$i + 1],
             ];
         }
+    
         $randomCode = mt_rand(10000, 99999);
         $kodeInv = "DVBR-" . $randomCode;
         $transaksi = StatusOrderModel::create([
             'id_user' => $userId, 
             'kode_inv' => $kodeInv,
+            'status_tanggal' => now(),
+            'diskon' => $request->diskon,
         ]);
-
-        foreach($resultArray as $d){
-
+    
+        foreach ($resultArray as $d) {
             PesanModel::create([
                 'pesan_idtransaksi' => $transaksi->id,
                 "pesan_idbarang" => $d['idBarang'],
-                'pesan_jumlah' => $d['jml'],
+                'pesan_jumlah' => $d['jml'], // Gunakan nilai diskon di sini
             ]);
         }
-
-        return response()->json(['success', "berhasil"]);
+    
+        return response()->json(['success' => true, "berhasil"]);
     }
+    
     public function status()
 {
     $data["title"] = "Status Pesanan";
@@ -142,15 +147,17 @@ class PesanController extends Controller
             'namauser' => $ownerName,
             'alamat' => $ownerAddress,
             'status' => $status,
-            'date' => $dt->created_at,
+            'date' => $dt->status_tanggal,
+            'date_pesan' => $dt->created_at,
             'id_user' => $dt->id_user,
             'id' => $dt->id,
             'total_harga' => $total_harga,
             'total_jumlah' => $total_jumlah,
-            'kode_pesan' => $dt->kode_inv
+            'kode_pesan' => $dt->kode_inv,
+            'diskon'=> $dt->diskon
         ];
     }
-
+// dd($dataTransaksi);
     return view('Admin.Pesan.statustransaksi', ['data' => $data, 'arr' => $arr, 'title' => $data['title']]);
 }
 
@@ -176,7 +183,10 @@ public function detail($id)
             ]);
             $results = StatusOrderModel::where('tbl_status_order.kode_inv', $id)->first();
             $newStatus = $request->input('status');
-            $results->update(['status' => $newStatus]);
+            $results->update([
+                'status' => $newStatus,
+                'status_tanggal' => now(),
+            ]);
             return response()->json(['message' => 'Status berhasil diperbarui']);
         }
         public function cetakStruk($id)

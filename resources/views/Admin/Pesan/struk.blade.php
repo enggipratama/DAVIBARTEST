@@ -83,14 +83,37 @@ use Carbon\Carbon;
         <br>{{ $userInfo->user_notlp }}
         <br>
         <br><strong>Status: <span
-            style="color: 
+                style="color: 
     @if ($statusOrder->status == 'Pending') yellow;
     @elseif($statusOrder->status == 'Dikirim') green;
     @elseif($statusOrder->status == 'Selesai') blue;
     @elseif($statusOrder->status == 'Dibatalkan') red;
     @else black; @endif
 ">{{ $statusOrder->status }}</strong></span>
-
+        @if ($statusOrder->created_at)
+            <div class="text-center mt-2">
+                <strong>Tanggal Pesan :</strong>
+                {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('D MMMM YYYY') }}
+                /
+                {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('A')) }}
+            </div>
+        @else
+            <div class="text-center mt-2">
+                -
+            </div>
+        @endif
+        @if ($statusOrder->status_tanggal)
+            <div class="text-center mt-2">
+                <strong>Update :
+                </strong>{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('D MMMM YYYY') }}
+                /
+                {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('A')) }}
+            </div>
+        @else
+            <div class="text-center mt-2">
+                -
+            </div>
+        @endif
     </div>
     <br>
 
@@ -122,8 +145,12 @@ use Carbon\Carbon;
 
         <tfoot>
             <tr style="background-color: lightgray;">
-                <td colspan="3" align="right"> Total Harga</td>
-                <td colspan="4" align="left"> Rp. {{ number_format($totalHarga, 0, ',', '.') }}</td>
+                <td colspan="3" align="right"> Total</td>
+                <td colspan="4" align="left"> Rp. {{ number_format($totalHarga-$statusOrder->diskon, 0, ',', '.') }}</td>
+            </tr>
+            <tr style="background-color: lightgray;">
+                <td colspan="3" align="right"> disc</td>
+                <td colspan="4" align="left"><span id="total-harga" style="color: rgb(228, 115, 9);"> Rp. -{{ number_format($statusOrder->diskon, 0, ',', '.') }}</td>
             </tr>
         </tfoot>
     </table>

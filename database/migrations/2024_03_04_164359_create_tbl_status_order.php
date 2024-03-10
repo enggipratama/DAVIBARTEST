@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('tbl_status_order', function (Blueprint $table) {
             $table->id();
             $table->integer('id_user');
+            $table->integer('diskon');
             $table->string('kode_inv');
+            $table->string('status_tanggal');
             $table->enum('status', ['Pending','Dikirim','Selesai','Dibatalkan'])->default('Pending');
             $table->timestamps();
         });

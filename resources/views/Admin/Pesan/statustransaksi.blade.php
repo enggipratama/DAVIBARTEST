@@ -30,7 +30,7 @@
                                     <th class="border-bottom-0">Nama</th>
                                     <th class="border-bottom-0">Alamat</th>
                                     <th class="border-bottom-0">Total Harga</th>
-                                    <th class="border-bottom-0">Tanggal</th>
+                                    <th class="border-bottom-0">Tanggal Pesan</th>
                                     <th class="border-bottom-0">Kode Pesan</th>
                                     <th class="border-bottom-0">Status</th>
                                     <th class="border-bottom-0">Pilih</th>
@@ -38,12 +38,22 @@
                             </thead>
                             <tbody>
                                 @foreach ($arr as $a)
-                                @if (in_array(Session::get('user')->role_id, ['1', '2', '4']) || Session::get('user')->user_id === $a['id_user'])
+                                    @if (in_array(Session::get('user')->role_id, ['1', '2', '4']) || Session::get('user')->user_id === $a['id_user'])
                                         <tr>
                                             <td>{{ $a['namauser'] }}</td>
                                             <td>{{ $a['alamat'] }}</td>
-                                            <td>Rp. {{ number_format($a['total_harga'], 0) }}</td>
-                                            <td>{{ $a['date']->formatLocalized('%d %B %Y') }}</td>
+                                            <td>Rp. {{ number_format($a['total_harga'] - $a['diskon'], 0) }}<br> disc Rp.
+                                                @if ($a['diskon'] > 0)
+                                                    -
+                                                @endif{{ number_format($a['diskon'], 0) }}</td>
+                                            <td>
+                                                @if ($a['date_pesan'])
+                                                    {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('D MMMM YYYY') }}<br>
+                                                    {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('A')) }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
                                             <td><span style="color: rgb(15, 209, 41);">{{ $a['kode_pesan'] }}</span></td>
                                             <td>
                                                 <div class="d-flex justify-content-center">

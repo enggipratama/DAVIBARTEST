@@ -127,13 +127,14 @@ use Carbon\Carbon;
 
     <table border="1" id="table1">
         <thead>
-            <tr style="background-color: #f0f0f0;">
+            <tr style="background-color: lightgray;">
                 <th align="center" width="1%">NO</th>
                 <th>KODE BARANG</th>
                 <th>BARANG</th>
                 <th>STOK KELUAR</th>
                 <th>HARGA SATUAN</th>
                 <th>TOTAL RP.</th>
+                <th>TOTAL disc</th>
             </tr>
         </thead>
         <tbody>
@@ -146,13 +147,23 @@ use Carbon\Carbon;
                     <td align="center">{{ $d['jmlkeluar'] }}</td>
                     <td>Rp. {{ number_format($d['barang_harga'], 0, ',', '.') }} / {{ $d['satuan'] }}</td>
                     <td>Rp. {{ number_format($d['totalStokRP'], 0, ',', '.') }}</td>
+                    <td>Rp. {{ number_format($d['diskon_total'], 0, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>
+        <tfoot>
+            <tr style="background-color: lightgray;">
+                <td colspan="5" align="right" ><strong> Total </strong></td>
+                <td colspan="1" align="left"><strong> Rp. {{ number_format($totalStokRPTotal, 0, ',', '.') }}</strong></td>
+                <td colspan="0" align="left"><strong> Rp. <span id="total-harga" style="color: rgb(228, 115, 9);">- {{ number_format($diskon, 0, ',', '.') }}</strong></td>
+            </tr>
+            <tr style="background-color: lightgray;">
+                <td colspan="5" align="right" ></td>
+                <td colspan="1" align="right"><strong><b> Total</b></strong></td>
+                <td colspan="0" align="left"><strong><b> Rp. {{ number_format($totalStokRPTotal-$diskon, 0, ',', '.') }}</b></strong></td>
+            </tr>
+        </tfoot>
     </table>
-    <div class="container">
-        <b>Total : Rp. {{ number_format($totalStokRPTotal, 0, ',', '.') }}</b>
-    </div>
 </body>
 
 </html>
