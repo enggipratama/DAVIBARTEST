@@ -101,7 +101,27 @@ class PesanController extends Controller
     
         return response()->json(['success' => true, "berhasil"]);
     }
+    public function proses_hapus($kode_pesan)
+    {
+        $transaksi = StatusOrderModel::where('kode_inv', $kode_pesan)->first();
     
+        if (!$transaksi) {
+            return response()->json(['error' => 'Transaksi tidak ditemukan'], 404);
+        }
+        try {
+            DB::beginTransaction();
+            foreach ($transaksi->pesan as $pesan) {
+                $pesan->delete();
+            }
+            $transaksi->delete();
+            DB::commit();
+            return response()->json(['success' => 'Berhasil menghapus transaksi']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Gagal menghapus transaksi'], 500);
+        }
+    }
+
     public function status()
 {
     $data["title"] = "Status Pesanan";

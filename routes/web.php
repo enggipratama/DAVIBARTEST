@@ -65,6 +65,7 @@ Route::group(['middleware' => 'userlogin'], function () {
         Route::get('/admin/pesan/detail/struk/{id}', [PesanController::class, 'cetakStruk'])->name('cetakStruk');
         Route::get('/admin/pesan/status/', [PesanController::class, 'status'])->name('statustransaksi');
         Route::post('/admin/pesan/addToPesan/',[PesanController::class,'addToPesan'])->name('addPesan');
+        Route::delete('/admin/pesan/status/{kode_pesan}', [PesanController::class , 'proses_hapus'])->name('deleteTransaction');
     });
     
     Route::middleware(['checkRoleUser:/jenisbarang,submenu'])->group(function () {

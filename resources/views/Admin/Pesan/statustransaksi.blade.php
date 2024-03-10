@@ -45,7 +45,8 @@
                                             <td>Rp. {{ number_format($a['total_harga'] - $a['diskon'], 0) }}<br> disc Rp.
                                                 @if ($a['diskon'] > 0)
                                                     -
-                                                @endif{{ number_format($a['diskon'], 0) }}</td>
+                                                @endif{{ number_format($a['diskon'], 0) }}
+                                            </td>
                                             <td>
                                                 @if ($a['date_pesan'])
                                                     {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('D MMMM YYYY') }}<br>
@@ -70,6 +71,10 @@
                                                 <div class="d-flex justify-content-center">
                                                     <a href="{{ route('detailpesan', ['id' => $a['kode_pesan']]) }}"
                                                         class="btn btn-primary">Detail</a>&nbsp;
+                                                    @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
+                                                        <button class="btn btn-danger fa fa-trash"
+                                                            onclick="remove('{{ $a['kode_pesan'] }}')"></button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -91,6 +96,45 @@
         }
     </style>
     <script>
+        function remove(kode_pesan) {
+            swal({
+                title: "Konfirmasi",
+                text: "Apakah Anda yakin ingin menghapus pesanan dengan kode: " + kode_pesan + "?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal',
+                closeOnConfirm: false
+            }, function(isConfirmed) {
+                if (isConfirmed) {
+                    $.ajax({
+                        url: '/admin/pesan/status/' + kode_pesan,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            swal({
+                                title: "Pesanan telah dihapus!",
+                                type: "success",
+                            }, function() {
+                                location.reload();
+                            });
+                        },
+                        error: function(error) {
+                            console.error(error);
+                            swal("Terjadi kesalahan saat menghapus pesanan.", {
+                                type: "error",
+                            });
+                        }
+                    });
+                } else {
+                    swal("Penghapusan dibatalkan.");
+                }
+            });
+        }
+
         $(document).ready(function() {
             $('#table-1').DataTable({
                 "paging": true,
