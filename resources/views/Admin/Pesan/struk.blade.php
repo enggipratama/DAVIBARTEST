@@ -1,4 +1,6 @@
-<!doctype html>
+<!-- resources/views/struk.blade.php -->
+
+<!DOCTYPE html>
 <html lang="en">
 
 <?php
@@ -54,108 +56,164 @@ use Carbon\Carbon;
             width: 50px;
             border-radius: 10%;
         }
+
+        /* Container utama */
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        /* Gaya untuk mengelola header dan informasi umum */
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+        }
+
+        .header-info img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Gaya untuk mengelola informasi pengiriman dan status pesanan */
+        .delivery-info {
+            font-size: 0.7em;
+            margin-top: 10px;
+        }
+
+        /* Gaya untuk mengelola tabel barang */
+        table {
+            width: 100%;
+            font-size: 0.6em;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        tfoot tr td {
+            font-weight: bold;
+        }
+
+        /* Gaya untuk mengelola total dan diskon */
+        .total-section {
+            margin-top: 10px;
+            font-size: 0.6em;
+        }
     </style>
 </head>
 
 <body onload="window.print()">
-    <div class="logo-container">
-        @if ($data->web_logo == '' || $data->web_logo == 'default.png')
-            <img src="{{ url('/assets/default/web/default.png') }}" alt="">
-        @else
-            <img src="{{ asset('storage/web/' . $data->web_logo) }}" alt="">
-        @endif
-        <div class="text-center">
-            <h3 style="font-size: 0.8em;">{{ $data->web_nama }}</h3>
-            <p style="font-size: 0.7em;">{{ $data->web_alamat }}. No.Tlp {{ $data->web_tlpn }}</p>
+    <div class="container">
+        <div class="logo-container">
+            @if ($data->web_logo == '' || $data->web_logo == 'default.png')
+                <img src="{{ url('/assets/default/web/default.png') }}" alt="">
+            @else
+                <img src="{{ asset('storage/web/' . $data->web_logo) }}" alt="">
+            @endif
+            <div class="delivery-info">
+                <h3>{{ $data->web_nama }}</h3>
+                <p>{{ $data->web_alamat }}. No.Tlp {{ $data->web_tlpn }}</p>
+            </div>
         </div>
-    </div>
-    <hr>
+        <hr>
 
-    <div style="font-size: 0.7em;">
-        <strong>Kode Invoice: <span style="color: #09d636;">{{ $statusOrder->kode_inv }}</span></strong>
-        <br><strong>Dari: </strong>{{ $data->web_nama }}
-        <br>{{ $data->web_alamat }}
-        <br>{{ $data->web_tlpn }}
-    </div>
-    <div style="font-size: 0.7em; ">
-        <br><strong>Ke: </strong>{{ $userInfo->user_nmlengkap }}
-        <br>{{ $userInfo->user_alamat }}
-        <br>{{ $userInfo->user_notlp }}
-        <br>
-        <br><strong>Status: <span
+        <div class="header-info">
+            <strong>Kode Invoice: <span style="color: #09d636;">{{ $statusOrder->kode_inv }}</span></strong>
+        </div>
+
+        <div class="delivery-info">
+            <div>
+                <strong>Dari:</strong> {{ $data->web_nama }}
+                <br>{{ $data->web_alamat }}
+                <br>{{ $data->web_tlpn }}
+            </div>
+            <strong>Ke:</strong> {{ $userInfo->user_nmlengkap }}
+            <br>{{ $userInfo->user_alamat }}
+            <br>{{ $userInfo->user_notlp }}
+            <br>
+            <br><strong>Status:</strong>
+            <span
                 style="color: 
-    @if ($statusOrder->status == 'Pending') yellow;
-    @elseif($statusOrder->status == 'Dikirim') green;
-    @elseif($statusOrder->status == 'Selesai') blue;
-    @elseif($statusOrder->status == 'Dibatalkan') red;
-    @else black; @endif
-">{{ $statusOrder->status }}</strong></span>
-        @if ($statusOrder->created_at)
-            <div class="text-center mt-2">
-                <strong>Tanggal Pesan :</strong>
-                {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('D MMMM YYYY') }}
-                /
-                {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('A')) }}
-            </div>
-        @else
-            <div class="text-center mt-2">
-                -
-            </div>
-        @endif
-        @if ($statusOrder->status_tanggal)
-            <div class="text-center mt-2">
-                <strong>Update :
-                </strong>{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('D MMMM YYYY') }}
-                /
-                {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('A')) }}
-            </div>
-        @else
-            <div class="text-center mt-2">
-                -
-            </div>
-        @endif
-    </div>
-    <br>
+                @if ($statusOrder->status == 'Pending') yellow;
+                @elseif($statusOrder->status == 'Dikirim') green;
+                @elseif($statusOrder->status == 'Selesai') blue;
+                @elseif($statusOrder->status == 'Dibatalkan') red;
+                @else black; @endif
+            ">{{ $statusOrder->status }}</span>
 
-    <table width="100%">
-        <thead style="background-color: lightgray;">
-            <tr>
-                <th>Nama</th>
-                <th>Harga</th>
-                <th>Jumlah</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $totalHarga = 0; // Initialize total harga variable outside the loop
-            @endphp
-            @foreach ($items as $items)
+            @if ($statusOrder->created_at)
+                <div class="text-center mt-2">
+                    <strong>Tanggal Pesan :</strong>
+                    {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('D MMMM YYYY') }}
+                    /
+                    {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->created_at)->isoFormat('A')) }}
+                </div>
+            @else
+                <div class="text-center mt-2">
+                    -
+                </div>
+            @endif
+            @if ($statusOrder->status_tanggal)
+                <div class="text-center mt-2">
+                    <strong>Update :</strong>
+                    {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('D MMMM YYYY') }}
+                    /
+                    {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('A')) }}
+                </div>
+            @else
+                <div class="text-center mt-2">
+                    -
+                </div>
+            @endif
+        </div>
+
+        <table>
+            <thead style="background-color: lightgray;">
                 <tr>
-                    <td>{{ $items->barang_nama }}</td>
-                    <td>Rp. {{ number_format($items->barang_harga, 0, ',', '.') }}</td>
-                    <td>{{ $items->pesan_jumlah }} {{ $items->satuan_nama }}</td>
-                    <td>Rp. {{ number_format($items->pesan_jumlah * $items->barang_harga, 0, ',', '.') }}</td>
+                    <th>Nama</th>
+                    <th>Harga</th>
+                    <th>Jumlah</th>
+                    <th>Total</th>
                 </tr>
+            </thead>
+            <tbody>
                 @php
-                    $totalHarga += $items->pesan_jumlah * $items->barang_harga; // Accumulate the total harga
+                    $totalHarga = 0; // Initialize total harga variable outside the loop
                 @endphp
-            @endforeach
-        </tbody>
+                @foreach ($items as $item)
+                    <tr>
+                        <td>{{ $item->barang_nama }}</td>
+                        <td>Rp. {{ number_format($item->barang_harga, 0, ',', '.') }}</td>
+                        <td>{{ $item->pesan_jumlah }} {{ $item->satuan_nama }}</td>
+                        <td>Rp. {{ number_format($item->pesan_jumlah * $item->barang_harga, 0, ',', '.') }}</td>
+                    </tr>
+                    @php
+                        $totalHarga += $item->pesan_jumlah * $item->barang_harga; // Accumulate the total harga
+                    @endphp
+                @endforeach
+            </tbody>
 
-        <tfoot>
-            <tr style="background-color: lightgray;">
-                <td colspan="3" align="right"> Total</td>
-                <td colspan="4" align="left"> Rp. {{ number_format($totalHarga-$statusOrder->diskon, 0, ',', '.') }}</td>
-            </tr>
-            <tr style="background-color: lightgray;">
-                <td colspan="3" align="right"> disc</td>
-                <td colspan="4" align="left"><span id="total-harga" style="color: rgb(228, 115, 9);"> Rp. -{{ number_format($statusOrder->diskon, 0, ',', '.') }}</td>
-            </tr>
-        </tfoot>
-    </table>
-
-
+            <tfoot>
+                <tr style="background-color: lightgray;">
+                    <td colspan="3" align="right">Total</td>
+                    <td colspan="4" align="left">Rp.
+                        {{ number_format($totalHarga - $statusOrder->diskon, 0, ',', '.') }}</td>
+                </tr>
+                <tr style="background-color: lightgray;">
+                    <td colspan="3" align="right">Diskon</td>
+                    <td colspan="4" align="left"><span id="total-harga" style="color: rgb(228, 115, 9);">Rp.
+                            -{{ number_format($statusOrder->diskon, 0, ',', '.') }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 </body>
 
 </html>
