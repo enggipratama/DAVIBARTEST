@@ -429,7 +429,7 @@ a.text-primary:focus {
 
 .login-img::before {
     content: "";
-    background: #153243;
+    background: #1A1A3C;
     height: 100%;
     width: 100%;
     position: absolute;
