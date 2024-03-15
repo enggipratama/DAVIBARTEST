@@ -5,12 +5,12 @@ namespace App\Models;
 use App\Models\Admin\PesanModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class StatusOrderModel extends Model
 {
     use HasFactory;
-    
+
     protected $table = "tbl_status_order";
     protected $fillable = [
         'id_user',
@@ -20,7 +20,8 @@ class StatusOrderModel extends Model
         'kode_inv'
     ];
 
-    public function pesan(){
+    public function pesan()
+    {
         return $this->hasMany(PesanModel::class, 'pesan_idtransaksi');
     }
 
@@ -41,14 +42,20 @@ class StatusOrderModel extends Model
             // ... (lainnya)
         ];
     }
-     public static function getEnumValues($column)
+
+    // Metode untuk mendapatkan nilai enum dari kolom tertentu
+    public static function getEnumValues($column)
     {
-        $type = DB::select(DB::raw("SHOW COLUMNS FROM " . DB::getTablePrefix() . (new self)->getTable() . " WHERE Field = '{$column}'"))[0]->Type;
-        preg_match('/^enum\((.*)\)$/', $type, $matches);
         $enumValues = [];
-        foreach (explode(',', $matches[1]) as $value) {
-            $enumValues[] = trim($value, "'");
+        $columnType = Schema::getColumnType('tbl_status_order', $column);
+
+        if (substr($columnType, 0, 4) === 'enum') {
+            $matches = [];
+            preg_match_all("/'([^']+)'/", $columnType, $matches);
+            $enumValues = $matches[1];
         }
+
         return $enumValues;
     }
 }
+
