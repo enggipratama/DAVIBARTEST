@@ -73,7 +73,6 @@ $web = WebModel::first();
                             Maaf, Website sedang dalam masa perbaikan!!
                         </h4>
                         <h3 class="error-details">
-                            <?xml version="1.0" encoding="utf-8"?>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 style="margin: auto; display: block; shape-rendering: auto; background: none;"
                                 width="286" height="121" preserveAspectRatio="xMidYMid">
@@ -181,10 +180,6 @@ $web = WebModel::first();
                                 </style>
                             </svg>
                         </h3>
-                        {{-- <div class="text-center">
-                            <a class="btn btn-primary mt-5 mb-5" href="{{ url('/admin') }}"> <i
-                                    class="fa fa-long-arrow-left"></i> Kembali </a>
-                        </div> --}}
                     </div>
                 </div>
             </div>
