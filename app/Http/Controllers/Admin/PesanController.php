@@ -112,7 +112,7 @@ class PesanController extends Controller
         }
 
         // Kirim notifikasi Discord
-        $webhookUrl = 'https://discord.com/api/webhooks/1217548176253521941/5duHhyzgi7a3w0F-RZdqvLd0M8tZWJf6kLykIErZ-axxDB3zSK_4bGHR9zn04RQBI1aJ';
+        $webhookUrl = 'https://discord.com/api/webhooks/1219613056418447461/hjopw4sbw1Y8FBWB5ONi962PI3U9Im9rHFHusoJ73KMo0hjLFkWNw6nfgZj4M3qrfwMZ';
         $pesan = "Kode Pesanan: `` " . $transaksi->kode_inv . " ``";
 
         $orderData = $this->getOrderData($transaksi);
@@ -228,7 +228,7 @@ class PesanController extends Controller
         ]);
         $orderData = $this->getOrderData($result);
         // Kirim notifikasi Discord baru
-        $webhookUrl = 'https://discord.com/api/webhooks/1217599206097813514/PFxbfyX13AFvP7L8Fk-KMkS7KkCl9GopK9eehbLGGOgswaJeB4opNiwvJsObJyRf5jdu';
+        $webhookUrl = 'https://discord.com/api/webhooks/1219613320068206592/f26jRHfIa04GPYcLGGlJ70zGd3pyOOvp1Unl45_mScNeWL4v2gFfN34cW6HV_KYyMeCz';
         $pesan = "Kode Pesanan: `` " . $result->kode_inv . " ``";
         $response = Http::post($webhookUrl, [
             'embeds' => [

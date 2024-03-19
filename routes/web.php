@@ -19,6 +19,7 @@ use App\Http\Controllers\Master\AppreanceController;
 use App\Http\Controllers\Master\MenuController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Master\WebController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
@@ -79,7 +80,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/satuan,submenu'])->group(function () {
         // Satuan
-        Route::resource('/admin/satuan', \App\Http\Controllers\Admin\SatuanController::class);
+        Route::resource('/admin/satuan', SatuanController::class);
         Route::get('/admin/satuan/show/', [SatuanController::class, 'show'])->name('satuan.getsatuan');
         Route::post('/admin/satuan/proses_tambah/', [SatuanController::class, 'proses_tambah'])->name('satuan.store');
         Route::post('/admin/satuan/proses_ubah/{satuan}', [SatuanController::class, 'proses_ubah']);
@@ -88,7 +89,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/merk,submenu'])->group(function () {
         // Merk
-        Route::resource('/admin/merk', \App\Http\Controllers\Admin\MerkController::class);
+        Route::resource('/admin/merk', MerkController::class);
         Route::get('/admin/merk/show/', [MerkController::class, 'show'])->name('merk.getmerk');
         Route::post('/admin/merk/proses_tambah/', [MerkController::class, 'proses_tambah'])->name('merk.store');
         Route::post('/admin/merk/proses_ubah/{merk}', [MerkController::class, 'proses_ubah']);
@@ -97,7 +98,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/barang,submenu'])->group(function () {
         // Barang
-        Route::resource('/admin/barang', \App\Http\Controllers\Admin\BarangController::class);
+        Route::resource('/admin/barang', BarangController::class);
         Route::get('/admin/barang/show/', [BarangController::class, 'show'])->name('barang.getbarang');
         Route::post('/admin/barang/proses_tambah/', [BarangController::class, 'proses_tambah'])->name('barang.store');
         Route::post('/admin/barang/proses_ubah/{barang}', [BarangController::class, 'proses_ubah']);
@@ -106,7 +107,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/customer,menu'])->group(function () {
         // Customer
-        Route::resource('/admin/customer', \App\Http\Controllers\Admin\CustomerController::class);
+        Route::resource('/admin/customer', CustomerController::class);
         Route::get('/admin/customer/show/', [CustomerController::class, 'show'])->name('customer.getcustomer');
         Route::post('/admin/customer/proses_tambah/', [CustomerController::class, 'proses_tambah'])->name('customer.store');
         Route::post('/admin/customer/proses_ubah/{customer}', [CustomerController::class, 'proses_ubah']);
@@ -115,7 +116,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/barang-masuk,submenu'])->group(function () {
         // Barang Masuk
-        Route::resource('/admin/barang-masuk', \App\Http\Controllers\Admin\BarangmasukController::class);
+        Route::resource('/admin/barang-masuk', BarangmasukController::class);
         Route::get('/admin/barang-masuk/show/', [BarangmasukController::class, 'show'])->name('barang-masuk.getbarang-masuk');
         Route::post('/admin/barang-masuk/proses_tambah/', [BarangmasukController::class, 'proses_tambah'])->name('barang-masuk.store');
         Route::post('/admin/barang-masuk/proses_ubah/{barangmasuk}', [BarangmasukController::class, 'proses_ubah']);
@@ -126,7 +127,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/barang-keluar,submenu'])->group(function () {
         // Barang Keluar
-        Route::resource('/admin/barang-keluar', \App\Http\Controllers\Admin\BarangkeluarController::class);
+        Route::resource('/admin/barang-keluar', BarangkeluarController::class);
         Route::get('/admin/barang-keluar/show/', [BarangkeluarController::class, 'show'])->name('barang-keluar.getbarang-keluar');
         Route::post('/admin/barang-keluar/proses_tambah/', [BarangkeluarController::class, 'proses_tambah'])->name('barang-keluar.store');
         Route::post('/admin/barang-keluar/proses_ubah/{barangkeluar}', [BarangkeluarController::class, 'proses_ubah']);
@@ -135,7 +136,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/lap-barang-masuk,submenu'])->group(function () {
         // Laporan Barang Masuk
-        Route::resource('/admin/lap-barang-masuk', \App\Http\Controllers\Admin\LapBarangMasukController::class);
+        Route::resource('/admin/lap-barang-masuk', LapBarangMasukController::class);
         Route::get('/admin/lapbarangmasuk/print/', [LapBarangMasukController::class, 'print'])->name('lap-bm.print');
         Route::get('/admin/lapbarangmasuk/pdf/', [LapBarangMasukController::class, 'pdf'])->name('lap-bm.pdf');
         Route::get('/admin/lap-barang-masuk/show/', [LapBarangMasukController::class, 'show'])->name('lap-bm.getlap-bm');
@@ -143,7 +144,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/lap-barang-keluar,submenu'])->group(function () {
         // Laporan Barang Keluar
-        Route::resource('/admin/lap-barang-keluar', \App\Http\Controllers\Admin\LapBarangKeluarController::class);
+        Route::resource('/admin/lap-barang-keluar', LapBarangKeluarController::class);
         Route::get('/admin/lapbarangkeluar/print/', [LapBarangKeluarController::class, 'print'])->name('lap-bk.print');
         Route::get('/admin/lapbarangkeluar/pdf/', [LapBarangKeluarController::class, 'pdf'])->name('lap-bk.pdf');
         Route::get('/admin/lap-barang-keluar/show/', [LapBarangKeluarController::class, 'show'])->name('lap-bk.getlap-bk');
@@ -151,7 +152,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/lap-stok-barang,submenu'])->group(function () {
         // Laporan Stok Barang
-        Route::resource('/admin/lap-stok-barang', \App\Http\Controllers\Admin\LapStokBarangController::class);
+        Route::resource('/admin/lap-stok-barang', LapStokBarangController::class);
         Route::get('/admin/lapstokbarang/print/', [LapStokBarangController::class, 'print'])->name('lap-sb.print');
         Route::get('/admin/lapstokbarang/pdf/', [LapStokBarangController::class, 'pdf'])->name('lap-sb.pdf');
         Route::get('/admin/lap-stok-barang/show/', [LapStokBarangController::class, 'show'])->name('lap-sb.getlap-sb');
@@ -159,7 +160,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
     Route::middleware(['checkRoleUser:/lap-pendapatan,submenu'])->group(function () {
         // Laporan Stok Barang
-        Route::resource('/admin/lap-pendapatan', \App\Http\Controllers\Admin\PendapatanController::class);
+        Route::resource('/admin/lap-pendapatan', PendapatanController::class);
         Route::get('/admin/lappendapatan/print/', [PendapatanController::class, 'print'])->name('lap-pendapatan.print');
         Route::get('/admin/lappendapatan/pdf/', [PendapatanController::class, 'pdf'])->name('lap-pendapatan.pdf');
         Route::get('/admin/lap-pendapatan/show/', [PendapatanController::class, 'show'])->name('lap-pendapatan.getlap');
@@ -169,7 +170,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
         Route::middleware(['checkRoleUser:2,othermenu'])->group(function () {
             // Menu
-            Route::resource('/admin/menu', \App\Http\Controllers\Master\MenuController::class);
+            Route::resource('/admin/menu', MenuController::class);
             Route::post('/admin/menu/hapus', [MenuController::class, 'hapus']);
             Route::get('/admin/menu/sortup/{sort}', [MenuController::class, 'sortup']);
             Route::get('/admin/menu/sortdown/{sort}', [MenuController::class, 'sortdown']);
@@ -177,14 +178,14 @@ Route::group(['middleware' => 'userlogin'], function () {
 
         Route::middleware(['checkRoleUser:3,othermenu'])->group(function () {
             // Role
-            Route::resource('/admin/role', \App\Http\Controllers\Master\RoleController::class);
+            Route::resource('/admin/role', RoleController::class);
             Route::get('/admin/role/show/', [RoleController::class, 'show'])->name('role.getrole');
             Route::post('/admin/role/hapus', [RoleController::class, 'hapus']);
         });
 
         Route::middleware(['checkRoleUser:4,othermenu'])->group(function () {
             // List User
-            Route::resource('/admin/user', \App\Http\Controllers\Master\UserController::class);
+            Route::resource('/admin/user', UserController::class);
             Route::get('/admin/user/show/', [UserController::class, 'show'])->name('user.getuser');
             Route::post('/admin/user/hapus', [UserController::class, 'hapus'])->name('user.hapus');
             // Route::get('/user/{id}/hapus', [UserController::class, 'hapus'])->name('user.hapus');
@@ -201,7 +202,7 @@ Route::group(['middleware' => 'userlogin'], function () {
 
         Route::middleware(['checkRoleUser:6,othermenu'])->group(function () {
             // Web
-            Route::resource('/admin/web', \App\Http\Controllers\Master\WebController::class);
+            Route::resource('/admin/web', WebController::class);
         });
     });
 });

@@ -78,33 +78,33 @@ $web = WebModel::first();
     <!-- BACKGROUND-IMAGE CLOSED -->
 
     <!-- JQUERY JS -->
-    <script src="{{url('/assets/js/jquery.min.js')}}"></script>
+    <script src="{{url('/assets/js/jquery.min.js')}}" async></script>
 
     <!-- BOOTSTRAP JS -->
-    <script src="{{url('/assets/plugins/bootstrap/js/popper.min.js')}}"></script>
-    <script src="{{url('/assets/plugins/bootstrap/js/bootstrap.min.js')}}"></script>
+    <script src="{{url('/assets/plugins/bootstrap/js/popper.min.js')}}"async></script>
+    <script src="{{url('/assets/plugins/bootstrap/js/bootstrap.min.js')}}"async></script>
 
     <!-- SWEET-ALERT JS -->
-    <script src="{{url('/assets/plugins/sweet-alert/sweetalert.min.js')}}"></script>
-    <script src="{{url('/assets/js/sweet-alert.js')}}"></script>
+    <script src="{{url('/assets/plugins/sweet-alert/sweetalert.min.js')}}"async></script>
+    <script src="{{url('/assets/js/sweet-alert.js')}}"async></script>
 
     <!-- SHOW PASSWORD JS -->
-    <script src="{{url('/assets/js/show-password.min.js')}}"></script>
+    <script src="{{url('/assets/js/show-password.min.js')}}"async></script>
 
     <!-- GENERATE OTP JS -->
-    <script src="{{url('/assets/js/generate-otp.js')}}"></script>
+    <script src="{{url('/assets/js/generate-otp.js')}}"async></script>
 
     <!-- Perfect SCROLLBAR JS-->
-    <script src="{{url('/assets/plugins/p-scroll/perfect-scrollbar.js')}}"></script>
+    <script src="{{url('/assets/plugins/p-scroll/perfect-scrollbar.js')}}"async></script>
 
     <!-- Color Theme js -->
-    <script src="{{url('/assets/js/themeColors.js')}}"></script>
+    <script src="{{url('/assets/js/themeColors.js')}}"async></script>
 
     <!-- CUSTOM JS -->
-    <script src="{{url('/assets/js/custom.js')}}"></script>
+    <script src="{{url('/assets/js/custom.js')}}"async></script>
 
     @if(Session::get('status') == 'success')
-    <script>
+    <script async>
         $(document).ready(function() {
             swal({
                 title: "{{Session::get('msg')}}",
