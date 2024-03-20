@@ -78,33 +78,33 @@ $web = WebModel::first();
     <!-- BACKGROUND-IMAGE CLOSED -->
 
     <!-- JQUERY JS -->
-    <script src="{{url('/assets/js/jquery.min.js')}}" async></script>
+    <script src="{{url('/assets/js/jquery.min.js')}}" ></script>
 
     <!-- BOOTSTRAP JS -->
-    <script src="{{url('/assets/plugins/bootstrap/js/popper.min.js')}}"async></script>
-    <script src="{{url('/assets/plugins/bootstrap/js/bootstrap.min.js')}}"async></script>
+    <script src="{{url('/assets/plugins/bootstrap/js/popper.min.js')}}"></script>
+    <script src="{{url('/assets/plugins/bootstrap/js/bootstrap.min.js')}}"></script>
 
     <!-- SWEET-ALERT JS -->
-    <script src="{{url('/assets/plugins/sweet-alert/sweetalert.min.js')}}"async></script>
-    <script src="{{url('/assets/js/sweet-alert.js')}}"async></script>
+    <script src="{{url('/assets/plugins/sweet-alert/sweetalert.min.js')}}"></script>
+    <script src="{{url('/assets/js/sweet-alert.js')}}"></script>
 
     <!-- SHOW PASSWORD JS -->
-    <script src="{{url('/assets/js/show-password.min.js')}}"async></script>
+    <script src="{{url('/assets/js/show-password.min.js')}}"></script>
 
     <!-- GENERATE OTP JS -->
-    <script src="{{url('/assets/js/generate-otp.js')}}"async></script>
+    <script src="{{url('/assets/js/generate-otp.js')}}"></script>
 
     <!-- Perfect SCROLLBAR JS-->
-    <script src="{{url('/assets/plugins/p-scroll/perfect-scrollbar.js')}}"async></script>
+    <script src="{{url('/assets/plugins/p-scroll/perfect-scrollbar.js')}}"></script>
 
     <!-- Color Theme js -->
-    <script src="{{url('/assets/js/themeColors.js')}}"async></script>
+    <script src="{{url('/assets/js/themeColors.js')}}"></script>
 
     <!-- CUSTOM JS -->
-    <script src="{{url('/assets/js/custom.js')}}"async></script>
+    <script src="{{url('/assets/js/custom.js')}}"></script>
 
     @if(Session::get('status') == 'success')
-    <script async>
+    <script>
         $(document).ready(function() {
             swal({
                 title: "{{Session::get('msg')}}",
