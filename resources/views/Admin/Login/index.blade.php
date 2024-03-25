@@ -6,9 +6,9 @@
     <div class="wrap-login100 p-6">
         <div class="d-flex justify-content-center align-items-center">
             @if($web->web_logo == '' || $web->web_logo == 'default.png')
-            <img src="{{url('/assets/default/web/default.png')}}" height="75px" class="" alt="logo">
+            <img src="{{url('/assets/default/web/default.png')}}" height="100px" class="rounded-3" alt="logo">
             @else
-            <img src="{{asset('storage/web/' . $web->web_logo)}}" height="75px" class="" alt="logo">
+            <img src="{{asset('storage/web/' . $web->web_logo)}}" height="100px" class="rounded-3" alt="logo">
             @endif
         </div>
         <div class="text-center">
@@ -32,9 +32,6 @@
                                 </a>
                                 <input name="pwd" class="input100 border-start-0 form-control ms-0" type="password" placeholder="Password" autocomplete="off">
                             </div>
-                            <!-- <div class="text-end pt-4">
-                                <p class="mb-0"><a href="forgot-password.html" class="text-primary ms-1">Forgot Password?</a></p>
-                            </div> -->
                             <div class="container-login100-form-btn">
                                 <button type="button" class="login100-form-btn btn btn-primary d-none" id="btnLoader" type="button" disabled="">
                                     <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
