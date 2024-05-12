@@ -15,7 +15,7 @@
              <a class="header-brand1" href="{{ url('/admin') }}">
                  @if ($web->web_logo == '' || $web->web_logo == 'default.png')
                      <img src="{{ url('/assets/default/web/default.png') }}" height="40px"
-                         class="header-brand-img toggle-logo" alt="logo">
+                         class="header-brand-img toggle-logo rounded-3" alt="logo">
                      <div class="header-brand-img desktop-logo">
                          <div class="d-flex align-items-center">
                              <img src="{{ url('/assets/default/web/default.png') }}" height="40px"
@@ -24,7 +24,7 @@
                          </div>
                      </div>
                      <img src="{{ url('/assets/default/web/default.png') }}" height="40px"
-                         class="header-brand-img light-logo" alt="logo">
+                         class="header-brand-img light-logo rounded-3" alt="logo">
                      <div class="header-brand-img light-logo1">
                          <div class="d-flex align-items-center">
                              <img src="{{ url('/assets/default/web/default.png') }}" height="40px"
@@ -34,7 +34,7 @@
                      </div>
                  @else
                      <img src="{{ asset('storage/web/' . $web->web_logo) }}" height="40px"
-                         class="header-brand-img toggle-logo" alt="logo">
+                         class="header-brand-img toggle-logo rounded-3" alt="logo">
                      <div class="header-brand-img desktop-logo">
                          <div class="d-flex align-items-center">
                              <img src="{{ asset('storage/web/' . $web->web_logo) }}" height="40px"
@@ -43,7 +43,7 @@
                          </div>
                      </div>
                      <img src="{{ asset('storage/web/' . $web->web_logo) }}" height="40px"
-                         class="header-brand-img light-logo" alt="logo">
+                         class="header-brand-img light-logo rounded-3" alt="logo">
                      <div class="header-brand-img light-logo1">
                          <div class="d-flex align-items-center">
                              <img src="{{ asset('storage/web/' . $web->web_logo) }}" height="40px"
