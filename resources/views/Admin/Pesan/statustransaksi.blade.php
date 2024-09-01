@@ -59,8 +59,16 @@
                                                     <small>Total setelah diskon:</small>
                                                     <strong style="font-size: larger; color: rgb(15, 209, 41);">
                                                         <small>Rp</small>
-                                                        {{ number_format($a['total_harga'] - $a['diskon'], 0, ',', '.') }}
+                                                        <?php
+                                                        $totalSetelahDiskon = $a['total_harga'] - $a['diskon'];
+                                                        if ($totalSetelahDiskon > 0) {
+                                                            echo number_format($totalSetelahDiskon, 0, ',', '.');
+                                                        } else {
+                                                            echo "0 (Free)";
+                                                        }
+                                                        ?>
                                                     </strong>
+                                                    
                                                 @else
                                                     <small>Rp</small>
                                                     <strong

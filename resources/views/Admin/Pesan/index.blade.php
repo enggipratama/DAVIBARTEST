@@ -321,8 +321,22 @@
             }
 
             function addToPesan() {
-                var diskoninput = document.getElementById('diskon');
-                var diskon = diskoninput ? parseInt(diskoninput.value, 10) : 0;
+                var diskonInput = document.getElementById('diskon');
+                var diskon = diskonInput ? parseInt(diskonInput.value, 10) : 0;
+
+                // Hitung total harga dari cartItems
+                var totalHarga = Object.values(cartItems).reduce(function(total, item) {
+                    return total + (item.quantity * item.harga);
+                }, 0);
+
+                // Hitung hasil pengurangan total harga dengan diskon
+                var selisih = totalHarga - diskon;
+
+                // Jika hasil pengurangan negatif, sesuaikan nilai diskon
+                if (selisih < 0) {
+                    diskon = diskon + selisih; // Diskon dikurangi selisih (selisih negatif)
+                }
+
                 const tableData = [];
                 var fd = new FormData();
 
@@ -333,7 +347,7 @@
 
                 fd.append('_token', '{{ csrf_token() }}');
                 fd.append('data', tableData);
-                fd.append('diskon', diskon);
+                fd.append('diskon', diskon); // Kirim diskon yang telah disesuaikan
 
                 $.ajax({
                     type: 'POST',
@@ -350,6 +364,7 @@
                     }
                 });
             }
+
 
             function setLoadingH(bool) {
                 $('#btnLoaderU').toggleClass('d-none', !bool);
@@ -376,6 +391,11 @@
                     return total + item.quantity * item.harga;
                 }, 0);
 
+                // Jika diskon lebih besar dari total harga, set diskon ke total harga
+                if (diskonValue > newTotalHarga) {
+                    diskonValue = newTotalHarga;
+                }
+
                 var finalTotalHarga = newTotalHarga - diskonValue;
 
                 var totalHargaOldElement = document.getElementById('total-harga-old');
@@ -388,7 +408,7 @@
                     totalHargaOldElement.style.display = 'none';
                 }
 
-                totalHargaNewElement.innerHTML = finalTotalHarga < 0 ? '( Free )' : numberFormat(finalTotalHarga);
+                totalHargaNewElement.innerHTML = finalTotalHarga === 0 ? '( Free )' : numberFormat(finalTotalHarga);
 
                 var diskonValueElement = document.getElementById('diskon-value');
                 if (diskonValueElement) {
