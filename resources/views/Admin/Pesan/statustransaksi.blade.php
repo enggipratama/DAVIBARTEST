@@ -42,15 +42,38 @@
                                         <tr>
                                             <td>{{ $a['namauser'] }}</td>
                                             <td>{{ $a['alamat'] }}</td>
-                                            <td>Rp. {{ number_format($a['total_harga'] - $a['diskon'], 0) }}<br> disc Rp.
+                                            <td>
+                                                <!-- Menampilkan diskon hanya jika ada -->
                                                 @if ($a['diskon'] > 0)
-                                                    -
-                                                @endif{{ number_format($a['diskon'], 0) }}
+                                                    <small>Rp</small>
+                                                    <strong
+                                                        style="font-size: larger; color: rgb(15, 209, 41); text-decoration: {{ $a['diskon'] > 0 ? 'line-through' : 'none' }};">
+                                                        {{ number_format($a['total_harga'], 0, ',', '.') }}
+                                                    </strong>
+                                                    <br>
+                                                    <small>Diskon:</small>
+                                                    <span style="color: rgb(209, 77, 15);">(-) Rp
+                                                        {{ number_format($a['diskon'], 0, ',', '.') }}</span>
+                                                    <br>
+                                                    <!-- Menampilkan total harga setelah diskon -->
+                                                    <small>Total setelah diskon:</small>
+                                                    <strong style="font-size: larger; color: rgb(15, 209, 41);">
+                                                        <small>Rp</small>
+                                                        {{ number_format($a['total_harga'] - $a['diskon'], 0, ',', '.') }}
+                                                    </strong>
+                                                @else
+                                                    <small>Rp</small>
+                                                    <strong
+                                                        style="font-size: larger; color: rgb(15, 209, 41); text-decoration: {{ $a['diskon'] > 0 ? 'line-through' : 'none' }};">
+                                                        {{ number_format($a['total_harga'], 0, ',', '.') }}
+                                                    </strong>
+                                                @endif
                                             </td>
+
                                             <td>
                                                 @if ($a['date_pesan'])
                                                     {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('D MMMM YYYY') }}<br>
-                                                    {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('A')) }}
+                                                    ( {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('A')) }} )
                                                 @else
                                                     -
                                                 @endif

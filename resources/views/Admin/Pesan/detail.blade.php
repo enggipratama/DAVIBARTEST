@@ -103,9 +103,9 @@
                                             </a>
                                         </td>
                                         <td>{{ $result->barang_nama }}</td>
-                                        <td>Rp. {{ number_format($result->barang_harga, 0) }}</td>
-                                        <td>{{ $result->pesan_jumlah }} {{ $result->satuan_nama }}</td>
-                                        <td>Rp. {{ number_format($result->pesan_jumlah * $result->barang_harga, 0) }}</td>
+                                        <td><small>Rp </small> {{ number_format($result->barang_harga, 0, ',', '.') }}</td>
+                                        <td><div class="d-flex justify-content-center align-items-center"><span style="display: flex; align-items: center; justify-content: center; " class="badge bg-info">{{ $result->pesan_jumlah }} {{ $result->satuan_nama }}</span></div></td>
+                                        <td><small>Rp </small> {{ number_format($result->pesan_jumlah * $result->barang_harga, 0, ',', '.') }}</td>
                                     </tr>
                                     @php
                                         $totalHarga += $result->pesan_jumlah * $result->barang_harga; // Accumulate the total harga
@@ -117,9 +117,41 @@
                 </div>
                 <div class="card-header justify-content-between">
                     <h3 class="card-title">
-                        <div id="total-harga"><span>Total : <span id="total-harga" style="color: rgb(15, 209, 41);">  Rp. {{ number_format($totalHarga-$statusOrder->diskon, 0) }}</span></span><br><br>
-                        <div id="total-harga">Disc : <span id="total-harga" style="color: rgb(228, 115, 9);"> Rp. -{{ number_format($statusOrder->diskon, 0) }}</span></span></div>
+                        <div id="total-harga-container">
+                            <div style="font-size: small">Total Harga</div>
+                            <br>
+                            @if ($statusOrder->diskon <= 0)
+                            <span style="font-size: small; color: rgb(15, 209, 41);">Rp
+                            <strong
+                                style="font-size: larger; color: rgb(15, 209, 41); text-decoration: {{ $statusOrder->diskon > 0 ? 'line-through' : 'none' }};">
+                                {{ number_format($totalHarga, 0, ',', '.') }}
+                            </strong>
+                            </span>
+                        @endif
+                            @if ($statusOrder->diskon > 0)
+                                <span style="font-size: small; color: rgb(15, 209, 41);">Rp
+                                <strong
+                                    style="font-size: larger; color: rgb(15, 209, 41); text-decoration: {{ $statusOrder->diskon > 0 ? 'line-through' : 'none' }};">
+                                    {{ number_format($totalHarga, 0, ',', '.') }}
+                                </strong>
+                                </span>
+                            <br>
+                            <div style="font-size: small">Disc :
+                                    <span style="color: rgb(209, 77, 15);">
+                                        (-) Rp {{ number_format($statusOrder->diskon, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                                <br>
+                                <div style="font-size: small">Total :
+                                    <span id="total-harga" style="color: rgb(15, 209, 41);">
+                                        Rp <strong style="font-size: larger;"> {{ number_format($totalHarga - $statusOrder->diskon, 0, ',', '.') }}
+                                    </strong>
+                                    </span>
+                                </div>
+                                @endif
+                        </div>
                     </h3>
+
                     <div class="d-flex justify-content-center">
                         <span id="statusBadge"
                             class="badge
@@ -132,7 +164,7 @@
                     </div>
                 </div>
                 @if ($statusOrder->status_tanggal)
-                    <div class="text-center mt-2" >
+                    <div class="text-center mt-2">
                         Update :
                         {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $statusOrder->status_tanggal)->isoFormat('D MMMM YYYY') }}
                         /
@@ -146,7 +178,7 @@
                 <div class="card-header justify-content-between">
                     <a href="{{ route('cetakStruk', ['id' => $statusOrder->kode_inv]) }}" class="btn btn-success"
                         target="_blank">Print Invoice</a>
-                        @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
+                    @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
                         <div class="d-flex">
                             <form method="post" action="{{ route('update.status', ['id' => $statusOrder->kode_inv]) }}">
                                 @csrf
