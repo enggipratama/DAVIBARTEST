@@ -144,10 +144,18 @@
                                 <br>
                                 <div style="font-size: small">Total :
                                     <span id="total-harga" style="color: rgb(15, 209, 41);">
-                                        Rp <strong style="font-size: larger;"> {{ number_format($totalHarga - $statusOrder->diskon, 0, ',', '.') }}
-                                    </strong>
+                                        Rp <strong style="font-size: larger;">
+                                            <?php
+                                            $totalSetelahDiskon = $totalHarga - $statusOrder->diskon;
+                                            if ($totalSetelahDiskon > 0) {
+                                                echo number_format($totalSetelahDiskon, 0, ',', '.');
+                                            } else {
+                                                echo "0 (Free)";
+                                            }
+                                            ?>
+                                        </strong>
                                     </span>
-                                </div>
+                                </div>                                
                                 @endif
                         </div>
                     </h3>

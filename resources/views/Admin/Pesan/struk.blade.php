@@ -199,17 +199,18 @@ use Carbon\Carbon;
                     @endphp
                 @endforeach
             </tbody>
-
             <tfoot>
                 <tr style="background-color: lightgray;">
-                    <td colspan="3" align="right">Total</td>
-                    <td colspan="4" align="left">Rp.
-                        {{ number_format($totalHarga - $statusOrder->diskon, 0, ',', '.') }}</td>
+                    <td colspan="3" align="right"><strong>Total</strong></td>
+                    <td colspan="4" align="left" style="color: rgb(15, 209, 41);"><small>Rp</small> <strong style="font-size: larger;">{{ number_format($totalHarga, 0, ',', '.') }}</strong></td>
                 </tr>
                 <tr style="background-color: lightgray;">
-                    <td colspan="3" align="right">Diskon</td>
-                    <td colspan="4" align="left"><span id="total-harga" style="color: rgb(228, 115, 9);">Rp.
-                            -{{ number_format($statusOrder->diskon, 0, ',', '.') }}</td>
+                    <td colspan="3" align="right"><strong>Total Diskon</strong></td>
+                    <td colspan="4" align="left" style="color: rgb(209, 77, 15);"><small>Rp</small> <strong style="font-size: larger;">{{ number_format($statusOrder->diskon, 0, ',', '.') }} ( - )</strong></td>
+                </tr>
+                <tr style="background-color: lightgray;">
+                    <td colspan="3" align="right"><strong>Total Setelah Diskon</strong></td>
+                    <td colspan="4" align="left" style="color: rgb(15, 209, 41);"><small>Rp</small> <strong style="font-size: larger;">{{ number_format($totalHarga - $statusOrder->diskon, 0, ',', '.') }}</strong></td>
                 </tr>
             </tfoot>
         </table>
