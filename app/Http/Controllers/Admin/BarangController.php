@@ -71,7 +71,7 @@ class BarangController extends Controller
                     return $merk;
                 })
                 ->addColumn('currency', function ($row) {
-                    $currency = $row->barang_harga == '' ? '-' : 'Rp. ' . number_format($row->barang_harga, 0);
+                    $currency = $row->barang_harga == '' ? '-' : '<small>Rp</small> ' . number_format($row->barang_harga, 0, ',', '.');
 
                     return $currency;
                 })
@@ -187,7 +187,7 @@ class BarangController extends Controller
                     return $merk;
                 })
                 ->addColumn('currency', function ($row) {
-                    $currency = $row->barang_harga == '' ? '-' : 'Rp ' . number_format($row->barang_harga, 0);
+                    $currency = $row->barang_harga == '' ? '-' : '<small>Rp</small>' . number_format($row->barang_harga, 0, ',', '.');
 
                     return $currency;
                 })

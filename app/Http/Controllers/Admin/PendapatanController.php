@@ -39,123 +39,118 @@ class PendapatanController extends Controller
             return $pdf->download('lap-pendapatan-semua-tanggal.pdf');
         }
     }
-    private function prepareData(Request $request){
-        $data['data'] = BarangModel::leftJoin('tbl_jenisbarang', 'tbl_jenisbarang.jenisbarang_id', '=', 'tbl_barang.jenisbarang_id')
-            ->leftJoin('tbl_satuan', 'tbl_satuan.satuan_id', '=', 'tbl_barang.satuan_id')
-            ->leftJoin('tbl_merk', 'tbl_merk.merk_id', '=', 'tbl_barang.merk_id')
-            ->orderBy('barang_id', 'DESC')->get();
-    
-        $data["title"] = "Print Stok Barang";
-        $data['web'] = WebModel::first();
-        $data['tglawal'] = $request->tglawal;
-        $data['tglakhir'] = $request->tglakhir;
-    
-        // Tambahkan logika baru di sini
-        $stokData = [];
-        $totalStokRPTotal = 0; // Inisialisasi total untuk totalStokRP
-        $totalStokRP = 0; // Inisialisasi totalStokRP di luar loop
-        $pesan_jumlah = 0; // Inisialisasi $pesan_jumlah di luar loop
-        $totaldiskon = 0;
-    
-        foreach ($data['data'] as $row) {
-            // Logika untuk menghitung jmlmasuk
-            if ($request->tglawal == '') {
-                $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')
-                    ->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')
-                    ->where('tbl_barangmasuk.barang_kode', '=', $row->barang_kode)
-                    ->sum('tbl_barangmasuk.bm_jumlah');
-            } else {
-                $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')
-                    ->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')
-                    ->whereBetween('bm_tanggal', [$request->tglawal, $request->tglakhir])
-                    ->where('tbl_barangmasuk.barang_kode', '=', $row->barang_kode)
-                    ->sum('tbl_barangmasuk.bm_jumlah');
-            }
-    
-            // Logika untuk menghitung jmlkeluar
-            if ($request->tglawal) {
-                $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')
-                    ->whereBetween('bk_tanggal', [$request->tglawal, $request->tglakhir])
-                    ->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)
-                    ->sum('tbl_barangkeluar.bk_jumlah');
-            } else {
-                $jmlkeluar = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')
-                    ->where('tbl_barangkeluar.barang_kode', '=', $row->barang_kode)
-                    ->sum('tbl_barangkeluar.bk_jumlah');
-            }
-    
-            if ($request->tglawal) {
-                $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
-                    ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
-                    ->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir])
-                    ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
-                    ->sum('tbl_pesan.pesan_jumlah');
-    
-                // Fetch and sum the 'diskon' values
-                $diskon_total = PesanModel::where('pesan_idbarang', $row->barang_id)
-                    ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
-                    ->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir])
-                    ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
-                    ->sum('tbl_status_order.diskon');
-            } else {
-                $pesan_jumlah = PesanModel::where('pesan_idbarang', $row->barang_id)
-                    ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
-                    ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
-                    ->sum('tbl_pesan.pesan_jumlah');
-    
-                // Fetch and sum the 'diskon' values
-                $diskon_total = PesanModel::where('pesan_idbarang', $row->barang_id)
-                    ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
-                    ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
-                    ->sum('tbl_status_order.diskon');
-            }
-    
-            $totalstatus = StatusOrderModel::with('pesan')
-                ->whereHas('pesan', function ($query) use ($row) {
-                    $query->where('pesan_idbarang', $row->barang_id);
-                })
-                ->whereIn('status', ['Dikirim', 'Selesai'])
-                ->first();
-    
-            $totalstok = $row->barang_stok + ($jmlmasuk - $jmlkeluar);
-    
-            if ($totalstatus) {
-                $totalreal = $totalstok - $pesan_jumlah;
-            } else {
-                $totalreal = $totalstok ;
-            }
+    private function prepareData(Request $request)
+{
+    // Ambil data barang
+    $data['data'] = BarangModel::leftJoin('tbl_jenisbarang', 'tbl_jenisbarang.jenisbarang_id', '=', 'tbl_barang.jenisbarang_id')
+        ->leftJoin('tbl_satuan', 'tbl_satuan.satuan_id', '=', 'tbl_barang.satuan_id')
+        ->leftJoin('tbl_merk', 'tbl_merk.merk_id', '=', 'tbl_barang.merk_id')
+        ->orderBy('barang_id', 'DESC')
+        ->get(['tbl_barang.*', 'tbl_satuan.satuan_nama']); // Ambil kolom yang diperlukan
 
-            $totaldiskon += $diskon_total;
-            $totalStokRP = $row->barang_harga * ($jmlkeluar + $pesan_jumlah);
-            $totalStokRPTotal += $totalStokRP;
-            // Tambahkan totalreal ke dalam array stokData
-            $stokData[] = [
-                'barang_id' => $row->barang_id,
-                'totalreal' => $totalreal,
-                'barang_kode' => $row->barang_kode,
-                'barang_nama' => $row->barang_nama,
-                'barang_stok' => $row->barang_stok,
-                'barang_harga' => $row->barang_harga,
-                'jmlmasuk' => $jmlmasuk,
-                'jmlkeluar' => $jmlkeluar + $pesan_jumlah,
-                'satuan' => $row->satuan->satuan_nama,
-                'totalStokRP' => $totalStokRP,
-                'diskon_total' => $diskon_total,
-            ];
-            
-            $data['stokData'][$row->barang_id]['totalStokRP'] = $totalStokRP;
-            $data['stokData'][$row->barang_id]['diskon_total'] = $diskon_total; // Simpan 'diskon' untuk setiap produk
-        }
-    
-        $data['totalStokRPTotal'] = $totalStokRPTotal;
-        $data['totalStokRP'] = $totalStokRP; // Simpan totalStokRP untuk seluruh dataset
-        $data['stokData'] = $stokData;
-        $data['diskon'] = $totaldiskon;
-        $data['totalpesan'] = $pesan_jumlah;
-    
-        return $data;
+    $data["title"] = "Print Stok Barang";
+    $data['web'] = WebModel::first();
+    $data['tglawal'] = $request->tglawal;
+    $data['tglakhir'] = $request->tglakhir;
+
+    $stokData = [];
+    $totalStokRPTotal = 0;
+    $totalDiskon = 0;
+
+    foreach ($data['data'] as $row) {
+        // Hitung jumlah masuk
+        $jmlmasuk = $this->calculateJumlahMasuk($row->barang_kode, $request);
+
+        // Hitung jumlah keluar
+        $jmlkeluar = $this->calculateJumlahKeluar($row->barang_kode, $request);
+
+        // Hitung jumlah pesan dan diskon
+        $pesan_jumlah = $this->calculatePesanJumlah($row->barang_id, $request);
+        $diskon_total = $this->calculateDiskonTotal($row->barang_id, $request);
+
+        $totalstok = $row->barang_stok + ($jmlmasuk - $jmlkeluar);
+        $totalreal = $totalstok - $pesan_jumlah;
+
+        $totalStokRP = $row->barang_harga * ($jmlkeluar + $pesan_jumlah);
+        $totalStokRPTotal += $totalStokRP;
+
+        // Simpan data barang ke stokData
+        $stokData[] = [
+            'barang_id' => $row->barang_id,
+            'totalreal' => $totalreal,
+            'barang_kode' => $row->barang_kode,
+            'barang_nama' => $row->barang_nama,
+            'barang_stok' => $row->barang_stok,
+            'barang_harga' => $row->barang_harga,
+            'jmlmasuk' => $jmlmasuk,
+            'jmlkeluar' => $jmlkeluar + $pesan_jumlah,
+            'satuan' => $row->satuan_nama, // Pastikan ini sesuai dengan nama kolom dari join
+            'totalStokRP' => $totalStokRP,
+        ];
     }
-    
+
+    $data['totalStokRPTotal'] = $totalStokRPTotal;
+    $data['stokData'] = $stokData;
+    $data['diskon'] = $diskon_total;
+
+    return $data;
+}
+
+
+// Fungsi untuk menghitung jumlah masuk
+private function calculateJumlahMasuk($barang_kode, Request $request)
+{
+    $query = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')
+        ->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')
+        ->where('tbl_barangmasuk.barang_kode', '=', $barang_kode);
+
+    if ($request->tglawal) {
+        $query->whereBetween('bm_tanggal', [$request->tglawal, $request->tglakhir]);
+    }
+
+    return $query->sum('tbl_barangmasuk.bm_jumlah');
+}
+
+// Fungsi untuk menghitung jumlah keluar
+private function calculateJumlahKeluar($barang_kode, Request $request)
+{
+    $query = BarangkeluarModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangkeluar.barang_kode')
+        ->where('tbl_barangkeluar.barang_kode', '=', $barang_kode);
+
+    if ($request->tglawal) {
+        $query->whereBetween('bk_tanggal', [$request->tglawal, $request->tglakhir]);
+    }
+
+    return $query->sum('tbl_barangkeluar.bk_jumlah');
+}
+
+// Fungsi untuk menghitung jumlah pesan
+private function calculatePesanJumlah($barang_id, Request $request)
+{
+    $query = PesanModel::where('pesan_idbarang', $barang_id)
+        ->join('tbl_status_order', 'tbl_status_order.id', '=', 'tbl_pesan.pesan_idtransaksi')
+        ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai']);
+
+    if ($request->tglawal) {
+        $query->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir]);
+    }
+
+    return $query->sum('tbl_pesan.pesan_jumlah');
+}
+
+// Fungsi untuk menghitung total diskon
+private function calculateDiskonTotal($barang_id, Request $request)
+{
+    $query = StatusOrderModel::whereIn('tbl_status_order.status', ['Dikirim', 'Selesai']);
+
+    if ($request->tglawal && $request->tglakhir) {
+        // Pastikan tanggal filter menggunakan kolom yang sesuai
+        $query->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir]);
+    }
+
+    return $query->sum('tbl_status_order.diskon');
+}
+
     public function show(Request $request)
     {
         if ($request->ajax()) {

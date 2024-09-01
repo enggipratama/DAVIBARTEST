@@ -57,7 +57,12 @@
                                                 </span>
                                             </div>
                                         </td>
-                                        <td>Rp. {{ number_format($product['harga'], 0) }}</td>
+                                        <td>
+                                            <p class="text-white mb-2 mt-2">
+                                                <small>Rp</small><strong
+                                                    style="font-size: larger;">{{ number_format($product['harga'], 0, ',', '.') }}</strong>
+                                            </p>
+                                        </td>
                                         <td>
                                             <input type="number" name="quantity" id="quantity_{{ $product['barang_id'] }}"
                                                 value="0" min="1" max="{{ $product['total_real'] }}"
@@ -148,11 +153,17 @@
                 <div class="card-header justify-content-between">
                     <h3 class="card-title">
                         <div id="total-harga">
-                            <span>Total : <span id="total-harga-value" style="color: rgb(15, 209, 41);">Rp. 0 </span></span>
+                            <span>Total :
+                                <span id="total-harga-old"
+                                    style="color: rgb(15, 209, 41); text-decoration: line-through; display: none;">Rp0</span>
+                                <span id="total-harga-new" style="color: rgb(15, 209, 41);">Rp0</span>
+                            </span>
+                            <br>
                             @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
                                 <br>
-                                <br>
-                                <span>Disc: <span id="diskon-value" style="color: rgb(209, 77, 15);">Rp. -0</span></span>
+                                <span>Disc :
+                                    <span id="diskon-value" style="color: rgb(209, 77, 15);">(-) Rp0</span>
+                                </span>
                             @endif
                         </div>
                     </h3>
@@ -184,18 +195,17 @@
                 var quantityInput = document.getElementById('quantity_' + barang_id);
                 var quantity = parseInt(quantityInput.value, 10);
                 var maxStok = parseInt(quantityInput.getAttribute('data-max-stok'), 10);
-                var totalHarga = quantity * barang_harga;
+
+                if (quantity > maxStok) {
+                    swal({
+                        title: 'Melebihi stok yang tersedia',
+                        text: 'Stok yang tersedia: ' + maxStok,
+                        type: "warning",
+                    });
+                    return;
+                }
 
                 if (cartItems[barang_id]) {
-                    var remainingQuantity = maxStok - cartItems[barang_id].quantity;
-                    if (quantity > remainingQuantity) {
-                        swal({
-                            title: 'Melebihi stok yang tersedia',
-                            text: 'Stok yang tersedia: ' + remainingQuantity,
-                            type: "warning",
-                        });
-                        return;
-                    }
                     cartItems[barang_id].quantity += quantity;
                 } else {
                     cartItems[barang_id] = {
@@ -209,17 +219,13 @@
                         type: "success",
                     });
                 }
-                var newTotalHarga = Object.values(cartItems).reduce(function(total, item) {
-                    return total + item.quantity * item.harga;
-                }, 0);
+
                 updateCartView();
-                var totalHargaElement = document.getElementById('total-harga-value');
-                totalHargaElement.innerHTML = '<span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga
-                    .toLocaleString() + '</span>';
+                updateTotalHarga();
             }
 
             function numberFormat(angka) {
-                return 'Rp. ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                return 'Rp' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             }
 
             function updateCartView() {
@@ -227,31 +233,57 @@
                 for (var itemId in cartItems) {
                     var item = cartItems[itemId];
                     var formattedHarga = numberFormat(item.harga);
+                    var formattedQuantity = item.quantity; // Variabel kuantitas item
+
                     cartItemsHTML += `<tr>
-                            <td>${item.nama}</td>
-                            <td>${formattedHarga}</td>
-                            <td>${item.quantity}</td>
-                            <td class="d-flex justify-content-center">
-                                <button class="btn btn-danger fa fa-trash" onclick="removeFromCart(this, ${itemId}, ${item.quantity * item.harga})"></button>
-                            </td>
-                        </tr>`;
+            <td>${item.nama}</td>
+            <td>${formattedHarga}</td>
+            <td>
+                <div class="d-flex justify-content-center align-items-center">
+                    <button class="btn btn-outline-primary btn-sm me-2" onclick="updateQuantity(${itemId}, -1)">-</button>
+                    <span style="display: flex; align-items: center; justify-content: center; " class="badge bg-info">${formattedQuantity}</span>
+                    <button class="btn btn-outline-primary btn-sm ms-2" onclick="updateQuantity(${itemId}, 1)">+</button>
+                </div>
+            </td>
+                <td class="d-flex justify-content-center">
+                    <button class="btn btn-danger fa fa-trash" onclick="removeFromCart(this, ${itemId}, ${item.quantity * item.harga})"></button>
+                </td>
+            </tr>`;
                 }
                 document.getElementById('cart-items').innerHTML = cartItemsHTML;
             }
 
+            function updateQuantity(itemId, change) {
+                var item = cartItems[itemId];
+                var maxStok = parseInt(document.getElementById('quantity_' + itemId).getAttribute('data-max-stok'), 10);
+
+                if (item) {
+                    var newQuantity = item.quantity + change;
+
+                    if (newQuantity <= 0) {
+                        removeFromCart(null, itemId, item.quantity * item.harga);
+                    } else if (newQuantity <= maxStok) {
+                        item.quantity = newQuantity;
+                        updateCartView();
+                        updateTotalHarga();
+                    } else {
+                        swal({
+                            title: 'Melebihi stok yang tersedia',
+                            text: 'Stok yang tersedia: ' + maxStok,
+                            type: "warning",
+                        });
+                    }
+                }
+            }
+
+
             function removeFromCart(button, barang_id, totalHarga) {
                 var row = button.parentNode.parentNode;
                 row.parentNode.removeChild(row);
-                var totalHargaSebelumnya = Object.values(cartItems).reduce(function(total, item) {
-                    return total + item.quantity * item.harga;
-                }, 0);
-                var newTotalHarga = totalHargaSebelumnya - totalHarga;
-                newTotalHarga = Math.max(0, newTotalHarga);
-                var totalHargaElement = document.getElementById('total-harga-value');
-                totalHargaElement.innerHTML = '<span style="color: rgb(15, 209, 41);"> Rp.' + newTotalHarga
-                    .toLocaleString() + '</span>';
+
                 delete cartItems[barang_id];
                 updateCartView();
+                updateTotalHarga();
             }
 
             function check() {
@@ -301,7 +333,7 @@
 
                 fd.append('_token', '{{ csrf_token() }}');
                 fd.append('data', tableData);
-                fd.append('diskon', diskon); // Tambahkan nilai diskon ke FormData
+                fd.append('diskon', diskon);
 
                 $.ajax({
                     type: 'POST',
@@ -320,13 +352,8 @@
             }
 
             function setLoadingH(bool) {
-                if (bool) {
-                    $('#btnLoaderU').removeClass('d-none');
-                    $('#btnSimpanU').addClass('d-none');
-                } else {
-                    $('#btnSimpanU').removeClass('d-none');
-                    $('#btnLoaderU').addClass('d-none');
-                }
+                $('#btnLoaderU').toggleClass('d-none', !bool);
+                $('#btnSimpanU').toggleClass('d-none', bool);
             }
 
             function validasi(message, type) {
@@ -338,20 +365,35 @@
 
             function updateTotalHarga() {
                 var diskonInput = document.getElementById('diskon');
-                var diskonValue = parseInt(diskonInput.value) || 0;
+                var diskonValue = 0;
+
+                // Cek apakah elemen diskon ada
+                if (diskonInput) {
+                    diskonValue = parseInt(diskonInput.value) || 0;
+                }
 
                 var newTotalHarga = Object.values(cartItems).reduce(function(total, item) {
                     return total + item.quantity * item.harga;
                 }, 0);
 
-                // Kurangkan diskon dari total harga
-                newTotalHarga -= diskonValue;
+                var finalTotalHarga = newTotalHarga - diskonValue;
 
-                // Tampilkan total harga yang baru
-                var totalHargaElement = document.getElementById('total-harga-value');
-                totalHargaElement.innerHTML = 'Rp. ' + newTotalHarga.toLocaleString();
+                var totalHargaOldElement = document.getElementById('total-harga-old');
+                var totalHargaNewElement = document.getElementById('total-harga-new');
+
+                if (diskonValue > 0) {
+                    totalHargaOldElement.style.display = 'inline';
+                    totalHargaOldElement.innerHTML = numberFormat(newTotalHarga);
+                } else {
+                    totalHargaOldElement.style.display = 'none';
+                }
+
+                totalHargaNewElement.innerHTML = finalTotalHarga < 0 ? '( Free )' : numberFormat(finalTotalHarga);
+
                 var diskonValueElement = document.getElementById('diskon-value');
-                diskonValueElement.innerHTML = 'Rp. -' + diskonValue.toLocaleString();
+                if (diskonValueElement) {
+                    diskonValueElement.innerHTML = '(-) ' + numberFormat(diskonValue);
+                }
             }
         </script>
     @endsection

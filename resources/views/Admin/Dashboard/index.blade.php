@@ -166,12 +166,17 @@
                                 class="w-100 h-100 img-fluid rounded-3" alt="produk" style="object-fit: cover;">
                         @endif
                     </div>
+                    <small class="text-white badge bg-dark">
+                        <small>Terjual</small> <strong style="font-size: larger;"> {{ $item['total_stok'] - $item['total_real'] }} {{ $item['satuan'] }}</strong>
+                    </small>
                     <div class="card-body text-center" style="max-width: 200px;">
                         <h5 class="text-white clamp-two-lines">
                             <b>{{ $item['nama'] }}</b>
-                        </h5>
-                        <p class="text-white mb-2 mt-2"><strong>Rp. {{ number_format($item['harga'], 0) }}</strong></p>
-                        <div class="col-lg-12">
+                        </h5>                                           
+                        <small class="text-white" style="font-size: larger">
+                            <small>Rp</small> <strong style="font-size: larger;">{{ number_format($item['harga'], 0, ',', '.') }}</strong>
+                        </small>
+                        <div class="col-lg-12 mt-3">
                             <a href="{{ url('admin/pesan') }}" class="btn btn-success">PESAN</a>
                         </div>
                     </div>
