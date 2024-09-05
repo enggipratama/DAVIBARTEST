@@ -177,6 +177,21 @@
                         </div>
                     </div>
                 @endif
+                <div class="text-center mx-5">
+                    <small id="note" style="color: red; display: none;">* Jika menggunakan transfer bank atau E-wallet
+                        sertakan bukti screenshot pada halaman detail pesanan</small>
+                </div>
+                <div class="card-header justify-content-around">
+                    <div class="input-group">
+                        <span class="input-group-text">Metode Bayar</span>
+                        <select name="metode_bayar" class="form-control" id="metode_bayar" style="width: 150px;">
+                            <option value="cash">Cash</option>
+                            <option value="transfer">Transfer Bank</option>
+                            <option value="e_wallet">E-Wallet (Dana/Ovo/Shopepay)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="card-header justify-content-around">
                     <button class="btn btn-warning d-none" id="btnLoaderU" type="button" disabled="">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -322,19 +337,14 @@
 
             function addToPesan() {
                 var diskonInput = document.getElementById('diskon');
+                var metode_bayar = document.getElementById('metode_bayar').value;
                 var diskon = diskonInput ? parseInt(diskonInput.value, 10) : 0;
-
-                // Hitung total harga dari cartItems
                 var totalHarga = Object.values(cartItems).reduce(function(total, item) {
                     return total + (item.quantity * item.harga);
                 }, 0);
-
-                // Hitung hasil pengurangan total harga dengan diskon
                 var selisih = totalHarga - diskon;
-
-                // Jika hasil pengurangan negatif, sesuaikan nilai diskon
                 if (selisih < 0) {
-                    diskon = diskon + selisih; // Diskon dikurangi selisih (selisih negatif)
+                    diskon = diskon + selisih; 
                 }
 
                 const tableData = [];
@@ -347,7 +357,8 @@
 
                 fd.append('_token', '{{ csrf_token() }}');
                 fd.append('data', tableData);
-                fd.append('diskon', diskon); // Kirim diskon yang telah disesuaikan
+                fd.append('diskon', diskon); 
+                fd.append('metode_bayar', metode_bayar); 
 
                 $.ajax({
                     type: 'POST',
@@ -381,8 +392,6 @@
             function updateTotalHarga() {
                 var diskonInput = document.getElementById('diskon');
                 var diskonValue = 0;
-
-                // Cek apakah elemen diskon ada
                 if (diskonInput) {
                     diskonValue = parseInt(diskonInput.value) || 0;
                 }
@@ -415,6 +424,16 @@
                     diskonValueElement.innerHTML = '(-) ' + numberFormat(diskonValue);
                 }
             }
+            document.getElementById('metode_bayar').addEventListener('change', function() {
+                var note = document.getElementById('note');
+                var metode = this.value;
+
+                if (metode === 'transfer' || metode === 'e_wallet') {
+                    note.style.display = 'block'; // Show note
+                } else {
+                    note.style.display = 'none'; // Hide note
+                }
+            });
         </script>
     @endsection
 

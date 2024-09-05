@@ -15,7 +15,7 @@
     <!-- PAGE-HEADER END -->
 
     <div class="row">
-        <div class="col-12 col-md-12 col-lg-6 mb-4">
+        <div class="col-12 col-md-12 col-lg-4 mb-4">
             <div class="card border-0 shadow">
                 <div class="card-header">
                     <h6 class="fw-bold mt-2">Profil Website</h6>
@@ -24,9 +24,11 @@
                     @foreach ($data as $d)
                         <div class="text-center py-5 mb-4">
                             @if ($d->web_logo == '' || $d->web_logo == 'default.png')
-                                <img class="rounded-3" src="{{ url('assets/default/web/default.png') }}" alt="logo" width="120">
+                                <img class="rounded-3" src="{{ url('assets/default/web/default.png') }}" alt="logo"
+                                    width="120">
                             @else
-                                <img class="rounded-3" src="{{ asset('storage/web/' . $d->web_logo) }}" alt="logo" width="120">
+                                <img class="rounded-3" src="{{ asset('storage/web/' . $d->web_logo) }}" alt="logo"
+                                    width="120">
                             @endif
                         </div>
                     @endforeach
@@ -70,7 +72,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-md-12 col-lg-6 mb-4">
+        <div class="col-12 col-md-12 col-lg-8 mb-4">
             <form action="{{ route('web.update', $d->web_id) }}" method="POST" name="myForm" enctype="multipart/form-data"
                 onsubmit="return validateForm()">
                 <div class="card shadow border-0">
@@ -102,21 +104,54 @@
                         </div>
                         <div class="form-group">
                             <label>Alamat</label>
-                            <input type="text" class="form-control" name="nmalamat" value="{{ $d->web_alamat == '' ? '-' : $d->web_alamat }}">
+                            <input type="text" class="form-control" name="nmalamat"
+                                value="{{ $d->web_alamat == '' ? '-' : $d->web_alamat }}">
                         </div>
                         <div class="form-group">
                             <label>No Telpon</label>
-                            <input type="number" class="form-control" name="nmtlpn" value="{{ $d->web_tlpn == '0' ? '-' : $d->web_tlpn }}">
+                            <input type="number" class="form-control" name="nmtlpn"
+                                value="{{ $d->web_tlpn == '0' ? '-' : $d->web_tlpn }}">
                         </div>
-
+                        <div class="form-group">
+                            <label>No Rekening</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text " style="font-size: 12px;">BCA</span>
+                                <input type="number" class="form-control form-control-sm" name="bca"
+                                    value="{{ $d->web_bca == '0' ? '-' : $d->web_bca }}">
+                                    <span class="input-group-text" style="font-size: 12px;">AN.</span>
+                                <input type="text" class="form-control form-control-sm" name="bca_an"
+                                    value="{{ $d->web_bca_an == '0' ? '-' : $d->web_bca_an }}">
+                            </div>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" style="font-size: 12px;">BRI</span>
+                                <input type="number" class="form-control form-control-sm" name="bri"
+                                    value="{{ $d->web_bri == '0' ? '-' : $d->web_bri }}">
+                                    <span class="input-group-text" style="font-size: 12px;">AN.</span>
+                                    <input type="text" class="form-control form-control-sm" name="bri_an"
+                                    value="{{ $d->web_bri_an == '0' ? '-' : $d->web_bri_an }}">
+                            </div>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" style="font-size: 12px;">MANDIRI</span>
+                                <input type="number" class="form-control form-control-sm" name="mandiri"
+                                    value="{{ $d->web_mandiri == '0' ? '-' : $d->web_mandiri }}">
+                                    <span class="input-group-text" style="font-size: 12px;">AN.</span>
+                                    <input type="text" class="form-control form-control-sm" name="mandiri_an"
+                                    value="{{ $d->web_mandiri_an == '0' ? '-' : $d->web_mandiri_an }}">
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text" style="font-size: 12px;">E-WALLET</span>
+                                <input type="number" class="form-control form-control-sm" name="ewallet"
+                                    value="{{ $d->web_ewallet == '0' ? '-' : $d->web_ewallet }}">
+                                    <span class="input-group-text" style="font-size: 12px;">AN.</span>
+                                    <input type="text" class="form-control form-control-sm" name="ewallet_an"
+                                    value="{{ $d->web_ewallet_an == '0' ? '-' : $d->web_ewallet_an }}">
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label>Deskripsi Website</label>
                             <textarea name="desk" rows="5" class="form-control">{{ $d->web_deskripsi }}</textarea>
                         </div>
-
-
                     </div>
-
                     <div class="card-footer">
                         <div class="mb-2">
                             <button type="submit" class="btn btn-success btn-md shadow">Simpan Perubahan

@@ -33,10 +33,12 @@
                                     <th class="border-bottom-0">Tanggal Pesan</th>
                                     <th class="border-bottom-0">Kode Pesan</th>
                                     <th class="border-bottom-0">Status</th>
+                                    <th class="border-bottom-0">Metode Bayar</th>
                                     <th class="border-bottom-0">Pilih</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {{-- @dump($arr); --}}
                                 @foreach ($arr as $a)
                                     @if (in_array(Session::get('user')->role_id, ['1', '2', '4']) || Session::get('user')->user_id === $a['id_user'])
                                         <tr>
@@ -64,11 +66,10 @@
                                                         if ($totalSetelahDiskon > 0) {
                                                             echo number_format($totalSetelahDiskon, 0, ',', '.');
                                                         } else {
-                                                            echo "0 (Free)";
+                                                            echo '0 (Free)';
                                                         }
                                                         ?>
                                                     </strong>
-                                                    
                                                 @else
                                                     <small>Rp</small>
                                                     <strong
@@ -81,7 +82,7 @@
                                             <td>
                                                 @if ($a['date_pesan'])
                                                     {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('D MMMM YYYY') }}<br>
-                                                    ( {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('A')) }} )
+                                                    ({{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('H:mm') . ' ' . ucfirst(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $a['date_pesan'])->isoFormat('A')) }})
                                                 @else
                                                     -
                                                 @endif
@@ -97,6 +98,33 @@
                                                         {{ $a['status'] }}
                                                     </span>
                                                 </div>
+                                            </td>
+                                            <td>
+                                                @switch($a['metode_bayar'])
+                                                    @case('e_wallet')
+                                                        E-Wallet (Dana/Ovo/Shopepay)
+                                                        <br>
+                                                        @if ($a['bukti_bayar'])
+                                                            <span class="badge bg-success mt-1">Bukti Uploaded</span>
+                                                        @else
+                                                            <span class="badge bg-danger mt-1">Silahkan upload bukti bayar</span>
+                                                        @endif
+                                                    @break
+                                                    @case('transfer')
+                                                        Transfer Bank
+                                                        <br>
+                                                        @if ($a['bukti_bayar'])
+                                                            <span class="badge bg-success mt-1">Bukti Uploaded</span>
+                                                        @else
+                                                            <span class="badge bg-danger mt-1">Silahkan upload bukti bayar</span>
+                                                        @endif
+                                                    @break
+                                                    @case('cash')
+                                                        Cash atau Bayar Ditempat
+                                                    @break
+                                                    @default
+                                                        {{ $a['metode_bayar'] }} <!-- Tampilkan nilai default jika tidak cocok -->
+                                                @endswitch
                                             </td>
                                             <td>
                                                 <div class="d-flex justify-content-center">

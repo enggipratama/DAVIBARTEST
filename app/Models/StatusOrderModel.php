@@ -17,7 +17,9 @@ class StatusOrderModel extends Model
         'diskon',
         'status',
         'status_tanggal',
-        'kode_inv'
+        'kode_inv',
+        'bukti_bayar',
+        'metode_bayar'
     ];
 
     public function pesan()
@@ -58,4 +60,3 @@ class StatusOrderModel extends Model
         return $enumValues;
     }
 }
-

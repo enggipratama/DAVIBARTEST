@@ -100,6 +100,7 @@ class PesanController extends Controller
             'kode_inv' => $kodeInv,
             'status_tanggal' => now(),
             'diskon' => $request->diskon,
+            'metode_bayar' => $request->metode_bayar,
         ]);
 
         // Simpan detail pesanan ke database
@@ -196,6 +197,8 @@ class PesanController extends Controller
 
     public function detail($id)
     {
+        $web = $this->getWeb(1);
+        // dd($web);
         $data = "Detail Pesanan";
         $statusOrder = $this->getStatusOrder($id);
 
@@ -206,7 +209,7 @@ class PesanController extends Controller
         $userInfo = $this->getUserInfo($statusOrder->id_user);
         $items = $this->getItems($statusOrder->id);
 
-        return view('Admin.Pesan.detail', compact('data', 'statusOrder', 'userInfo', 'items'));
+        return view('Admin.Pesan.detail', compact('data','web', 'statusOrder', 'userInfo', 'items'));
     }
 
     public function updateStatus(Request $request, $id)
@@ -322,6 +325,10 @@ class PesanController extends Controller
             ->get();
     }
 
+    private function getWeb($web_id) {
+        return DB::table('tbl_web')->where('web_id', $web_id)->first();
+    }
+
     private function getOrderData($statusOrder)
     {
         $total_harga = 0;
@@ -350,7 +357,6 @@ class PesanController extends Controller
             $ownerAddress = Session::get('user')->user_alamat;
             $status = $statusOrder->status;
         }
-
         return [
             'namauser' => $ownerName,
             'alamat' => $ownerAddress,
@@ -364,6 +370,41 @@ class PesanController extends Controller
             'total_jumlah' => $total_jumlah,
             'kode_pesan' => $statusOrder->kode_inv,
             'diskon' => $statusOrder->diskon,
+            'metode_bayar' => $statusOrder->metode_bayar,
+            'bukti_bayar' => $statusOrder->bukti_bayar,
+            // 'web_bca' => $web->web_bca,
+            // 'web_mandiri' => $web->web_mandiri,
+            // 'web_bri' => $web->web_bri,
+            // 'web_ewallet' => $web->web_ewallet,
         ];
     }
+    public function uploadBuktiTransfer(Request $request, $id)
+{
+    $request->validate([
+        'bukti_bayar' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+    ]);
+
+    $order = $this->getStatusOrder($id);
+    if (!$order) {
+        return redirect()->back()->with('error', 'Pesanan tidak ditemukan.');
+    }
+
+    if ($request->hasFile('bukti_bayar')) {
+        $file = $request->file('bukti_bayar');
+        $fileName = "bukti-bayar-" . hash('sha256', time()) . '.' . $file->getClientOriginalExtension();
+        $filePath = $file->storeAs('public/bukti_bayar', $fileName);
+        if ($order->bukti_bayar) {
+            Storage::delete('public/bukti_bayar/' . $order->bukti_bayar);
+        }
+        $update = StatusOrderModel::where('id', $order->id);
+
+        $update->update([
+            'bukti_bayar' => $fileName
+        ]);
+    }
+
+    // Redirect dengan pesan sukses
+    return redirect()->back()->with('success', 'Bukti transfer berhasil diupload.');
+}
+
 }

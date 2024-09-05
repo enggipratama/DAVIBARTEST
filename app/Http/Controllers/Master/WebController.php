@@ -37,6 +37,14 @@ class WebController extends Controller
                 'web_alamat' => $request->nmalamat,
                 'web_tlpn' => $request->nmtlpn,
                 'web_deskripsi' => $request->desk,
+                'web_bca' => $request->bca,
+                'web_mandiri' => $request->mandiri,
+                'web_bri' => $request->bri,
+                'web_ewallet' => $request->ewallet,
+                'web_bca_an' => $request->bca_an,
+                'web_mandiri_an' => $request->mandiri_an,
+                'web_bri_an' => $request->bri_an,
+                'web_ewallet_an' => $request->ewallet_an,
             ]);
         } else {
             $web->update([
@@ -44,6 +52,14 @@ class WebController extends Controller
                 'web_alamat' => $request->nmalamat,
                 'web_tlpn' => $request->nmtlpn,
                 'web_deskripsi'   => $request->desk,
+                'web_bca' => $request->bca,
+                'web_mandiri' => $request->mandiri,
+                'web_bri' => $request->bri,
+                'web_ewallet' => $request->ewallet,
+                'web_bca_an' => $request->bca_an,
+                'web_mandiri_an' => $request->mandiri_an,
+                'web_bri_an' => $request->bri_an,
+                'web_ewallet_an' => $request->ewallet_an,
             ]);
         }
 

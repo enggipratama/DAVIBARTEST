@@ -67,6 +67,7 @@ Route::group(['middleware' => 'userlogin'], function () {
         Route::get('/admin/pesan/status/', [PesanController::class, 'status'])->name('statustransaksi');
         Route::post('/admin/pesan/addToPesan/',[PesanController::class,'addToPesan'])->name('addPesan');
         Route::delete('/admin/pesan/status/{kode_pesan}', [PesanController::class , 'proses_hapus'])->name('deleteTransaction');
+        route::post('/admin/pesan/detail/{id}/upload', [PesanController::class, 'uploadBuktiTransfer'])->name('upload.bukti_transfer');
     });
     
     Route::middleware(['checkRoleUser:/jenisbarang,submenu'])->group(function () {

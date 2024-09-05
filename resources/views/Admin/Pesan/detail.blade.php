@@ -104,8 +104,15 @@
                                         </td>
                                         <td>{{ $result->barang_nama }}</td>
                                         <td><small>Rp </small> {{ number_format($result->barang_harga, 0, ',', '.') }}</td>
-                                        <td><div class="d-flex justify-content-center align-items-center"><span style="display: flex; align-items: center; justify-content: center; " class="badge bg-info">{{ $result->pesan_jumlah }} {{ $result->satuan_nama }}</span></div></td>
-                                        <td><small>Rp </small> {{ number_format($result->pesan_jumlah * $result->barang_harga, 0, ',', '.') }}</td>
+                                        <td>
+                                            <div class="d-flex justify-content-center align-items-center"><span
+                                                    style="display: flex; align-items: center; justify-content: center; "
+                                                    class="badge bg-info">{{ $result->pesan_jumlah }}
+                                                    {{ $result->satuan_nama }}</span></div>
+                                        </td>
+                                        <td><small>Rp </small>
+                                            {{ number_format($result->pesan_jumlah * $result->barang_harga, 0, ',', '.') }}
+                                        </td>
                                     </tr>
                                     @php
                                         $totalHarga += $result->pesan_jumlah * $result->barang_harga; // Accumulate the total harga
@@ -121,22 +128,22 @@
                             <div style="font-size: small">Total Harga</div>
                             <br>
                             @if ($statusOrder->diskon <= 0)
-                            <span style="font-size: small; color: rgb(15, 209, 41);">Rp
-                            <strong
-                                style="font-size: larger; color: rgb(15, 209, 41); text-decoration: {{ $statusOrder->diskon > 0 ? 'line-through' : 'none' }};">
-                                {{ number_format($totalHarga, 0, ',', '.') }}
-                            </strong>
-                            </span>
-                        @endif
+                                <span style="font-size: small; color: rgb(15, 209, 41);">Rp
+                                    <strong
+                                        style="font-size: larger; color: rgb(15, 209, 41); text-decoration: {{ $statusOrder->diskon > 0 ? 'line-through' : 'none' }};">
+                                        {{ number_format($totalHarga, 0, ',', '.') }}
+                                    </strong>
+                                </span>
+                            @endif
                             @if ($statusOrder->diskon > 0)
                                 <span style="font-size: small; color: rgb(15, 209, 41);">Rp
-                                <strong
-                                    style="font-size: larger; color: rgb(15, 209, 41); text-decoration: {{ $statusOrder->diskon > 0 ? 'line-through' : 'none' }};">
-                                    {{ number_format($totalHarga, 0, ',', '.') }}
-                                </strong>
+                                    <strong
+                                        style="font-size: larger; color: rgb(15, 209, 41); text-decoration: {{ $statusOrder->diskon > 0 ? 'line-through' : 'none' }};">
+                                        {{ number_format($totalHarga, 0, ',', '.') }}
+                                    </strong>
                                 </span>
-                            <br>
-                            <div style="font-size: small">Disc :
+                                <br>
+                                <div style="font-size: small">Disc :
                                     <span style="color: rgb(209, 77, 15);">
                                         (-) Rp {{ number_format($statusOrder->diskon, 0, ',', '.') }}
                                     </span>
@@ -150,16 +157,36 @@
                                             if ($totalSetelahDiskon > 0) {
                                                 echo number_format($totalSetelahDiskon, 0, ',', '.');
                                             } else {
-                                                echo "0 (Free)";
+                                                echo '0 (Free)';
                                             }
                                             ?>
                                         </strong>
                                     </span>
-                                </div>                                
-                                @endif
+                                </div>
+                            @endif
+                            <div class="justify-content-center mt-3">
+                                Metode Bayar :
+                                @switch($statusOrder->metode_bayar)
+                                    @case('e_wallet')
+                                        E-Wallet (Dana/Ovo/Shopepay)
+                                        <br>
+                                    @break
+
+                                    @case('transfer')
+                                        Transfer Bank
+                                        <br>
+                                    @break
+
+                                    @case('cash')
+                                        Cash atau Bayar Ditempat
+                                    @break
+
+                                    @default
+                                        {{ $a['metode_bayar'] }} <!-- Tampilkan nilai default jika tidak cocok -->
+                                @endswitch
+                            </div>
                         </div>
                     </h3>
-
                     <div class="d-flex justify-content-center">
                         <span id="statusBadge"
                             class="badge
@@ -183,15 +210,57 @@
                         -
                     </div>
                 @endif
-                <div class="card-header justify-content-between">
-                    <a href="{{ route('cetakStruk', ['id' => $statusOrder->kode_inv]) }}" class="btn btn-success"
-                        target="_blank">Print Invoice</a>
-                    @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
+                @if ($statusOrder->metode_bayar !== 'cash')
+                    @if ($statusOrder->bukti_bayar)
+                        <div class="d-flex justify-content-center align-items-center">
+                            <span class="badge bg-success badge-sm">Bukti Uploaded</span>
+                        </div>
+                    @else
+                        <div class="d-flex justify-content-center align-items-center">
+                            <span class="badge bg-danger badge-sm">Bukti Kosong</span>
+                        </div>
+                    @endif
+                    <div class="card-header justify-content-center">
+                        <form action="{{ route('upload.bukti_transfer', ['id' => $statusOrder->kode_inv]) }}"
+                            method="post" enctype="multipart/form-data">
+                            @csrf
+                            <label for="bukti_transfer" class="form-label">
+                                *BCA ( <span style="color: yellow;">{{ $web->web_bca ?? '-' }} AN.
+                                    {{ $web->web_bca_an ?? '-' }}</span> )
+                                <br>
+                                *BRI ( <span style="color: yellow;">{{ $web->web_bri ?? '-' }} AN.
+                                    {{ $web->web_bri_an ?? '-' }}</span> )
+                                <br>
+                                *MANDIRI ( <span style="color: yellow;">{{ $web->web_mandiri ?? '-' }} AN.
+                                    {{ $web->web_mandiri_an ?? '-' }}</span> )
+                                <br>
+                                *DANA/OVO/SHOPEPAY ( <span style="color: yellow;">{{ $web->web_ewallet ?? '-' }} AN.
+                                    {{ $web->web_ewallet_an ?? '-' }}</span> )
+                            </label>
+                            <br>
+                            <label for="bukti_transfer" class="form-label">Upload Bukti Transfer</label>
+                            <div class="input-group mb-3">
+                                <input type="file" class="form-control" id="bukti_transfer" name="bukti_bayar"
+                                    accept="image/*" required>
+                                <button type="submit" id="btnUpload" class="btn btn-primary">Upload</button>
+                            </div>
+                        </form>
+                    </div>
+                @endif
+                @if (in_array(Session::get('user')->role_id, ['1', '2', '4']))
+                    <div class="card-header justify-content-center">
                         <div class="d-flex">
+                            @if ($statusOrder->bukti_bayar)
+                                <a href="{{ asset('storage/bukti_bayar/' . $statusOrder->bukti_bayar) }}" target="_blank"
+                                    class="btn btn-secondary me-3">Bukti Transfer</a>
+                            @else
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <span class="badge bg-danger badge-sm me-3 mb-1 mt-1">Bukti Kosong</span>
+                                </div>
+                            @endif
                             <form method="post" action="{{ route('update.status', ['id' => $statusOrder->kode_inv]) }}">
                                 @csrf
                                 <select name="status" class="form-control">
-                                    <option value="">Status</option>
                                     @foreach (App\Models\StatusOrderModel::getStatusOptions() as $value => $label)
                                         <option value="{{ $value }}"
                                             {{ $statusOrder->status == $value ? 'selected' : '' }}>
@@ -210,7 +279,11 @@
                                     class="btn btn-primary">Update</a>
                             </div>
                         </div>
-                    @endif
+                    </div>
+                @endif
+                <div class="card-header justify-content-between">
+                    <a href="{{ route('cetakStruk', ['id' => $statusOrder->kode_inv]) }}" class="btn btn-success"
+                        target="_blank">Print Invoice</a>
                 </div>
             </div>
         </div>
