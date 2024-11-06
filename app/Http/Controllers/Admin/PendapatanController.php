@@ -141,15 +141,29 @@ private function calculatePesanJumlah($barang_id, Request $request)
 // Fungsi untuk menghitung total diskon
 private function calculateDiskonTotal($barang_id, Request $request)
 {
+    // Buat query awal
     $query = StatusOrderModel::whereIn('tbl_status_order.status', ['Dikirim', 'Selesai']);
 
     if ($request->tglawal && $request->tglakhir) {
-        // Pastikan tanggal filter menggunakan kolom yang sesuai
-        $query->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir]);
+        // Filter berdasarkan tanggal
+        $query = DB::table('tbl_pesan')
+            ->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir]);
     }
 
-    return $query->sum('tbl_status_order.diskon');
+    // Eksekusi query untuk mendapatkan data
+    $data = $query->get();
+
+    // Cek apakah data kosong
+    if ($data->isEmpty()) {
+        // Tampilkan alert jika data tidak ada
+        session()->flash('alert', 'Data tidak ada');
+        return 0; // Pastikan mengembalikan 0 jika data tidak ada
+    }
+
+    // Hitung total diskon, set nilai default ke 0 jika kosong
+    return $data->sum('tbl_status_order.diskon') ?? 0;
 }
+
 
     public function show(Request $request)
     {

@@ -109,8 +109,8 @@ use Carbon\Carbon;
             <img src="{{ asset('storage/web/' . $web->web_logo) }}" alt="Logo">
         @endif
         <div class="text-center">
-            <h3 style="font-size: 0.8em;">{{ $web->web_nama }}</h3>
-            <p style="font-size: 0.7em;">{{ $web->web_alamat }}. No.Tlp {{ $web->web_tlpn }}</p>
+            <h3 style="font-size: 1em;">{{ $web->web_nama }}</h3>
+            <p style="font-size: 0.9em;">{{ $web->web_alamat }}. No.Tlp {{ $web->web_tlpn }}</p>
         </div>
     </div>
     <hr>
