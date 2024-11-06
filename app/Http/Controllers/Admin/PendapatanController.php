@@ -146,22 +146,12 @@ private function calculateDiskonTotal($barang_id, Request $request)
 
     if ($request->tglawal && $request->tglakhir) {
         // Filter berdasarkan tanggal
-        $query = DB::table('tbl_pesan')
-            ->whereBetween(DB::raw('DATE(tbl_pesan.created_at)'), [$request->tglawal, $request->tglakhir]);
-    }
-
-    // Eksekusi query untuk mendapatkan data
-    $data = $query->get();
-
-    // Cek apakah data kosong
-    if ($data->isEmpty()) {
-        // Tampilkan alert jika data tidak ada
-        session()->flash('alert', 'Data tidak ada');
-        return 0; // Pastikan mengembalikan 0 jika data tidak ada
+        $query = DB::table('tbl_status_order')
+            ->whereBetween(DB::raw('DATE(tbl_status_order.created_at)'), [$request->tglawal, $request->tglakhir]);
     }
 
     // Hitung total diskon, set nilai default ke 0 jika kosong
-    return $data->sum('tbl_status_order.diskon') ?? 0;
+    return $query->sum('tbl_status_order.diskon');
 }
 
 
