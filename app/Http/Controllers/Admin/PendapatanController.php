@@ -147,6 +147,7 @@ private function calculateDiskonTotal($barang_id, Request $request)
     if ($request->tglawal && $request->tglakhir) {
         // Filter berdasarkan tanggal
         $query = DB::table('tbl_status_order')
+        ->whereIn('tbl_status_order.status', ['Dikirim', 'Selesai'])
             ->whereBetween(DB::raw('DATE(tbl_status_order.created_at)'), [$request->tglawal, $request->tglakhir]);
     }
 
