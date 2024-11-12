@@ -7,7 +7,7 @@
         <h1 class="page-title">{{ $data['title'] }}</h1>
         <div>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item text-gray">Davibar House</li>
+                <li class="breadcrumb-item text-gray">Davibar House shop</li>
                 <li class="breadcrumb-item active" aria-current="page">{{ $data['title'] }}</li>
             </ol>
         </div>
