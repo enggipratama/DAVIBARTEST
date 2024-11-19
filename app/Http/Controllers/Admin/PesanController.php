@@ -372,16 +372,12 @@ class PesanController extends Controller
             'diskon' => $statusOrder->diskon,
             'metode_bayar' => $statusOrder->metode_bayar,
             'bukti_bayar' => $statusOrder->bukti_bayar,
-            // 'web_bca' => $web->web_bca,
-            // 'web_mandiri' => $web->web_mandiri,
-            // 'web_bri' => $web->web_bri,
-            // 'web_ewallet' => $web->web_ewallet,
         ];
     }
     public function uploadBuktiTransfer(Request $request, $id)
 {
     $request->validate([
-        'bukti_bayar' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+        'bukti_bayar' => 'required|image|mimes:jpg,jpeg,png|max:2048',
     ]);
 
     $order = $this->getStatusOrder($id);

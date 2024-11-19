@@ -221,29 +221,31 @@
                         </div>
                     @endif
                     <div class="card-header justify-content-center">
-                        <form action="{{ route('upload.bukti_transfer', ['id' => $statusOrder->kode_inv]) }}"
-                            method="post" enctype="multipart/form-data">
-                            @csrf
-                            <label for="bukti_transfer" class="form-label">
-                                *BCA ( <span style="color: yellow;">{{ $web->web_bca ?? '-' }} AN.
-                                    {{ $web->web_bca_an ?? '-' }}</span> )
-                                <br>
-                                *BRI ( <span style="color: yellow;">{{ $web->web_bri ?? '-' }} AN.
-                                    {{ $web->web_bri_an ?? '-' }}</span> )
-                                <br>
-                                *MANDIRI ( <span style="color: yellow;">{{ $web->web_mandiri ?? '-' }} AN.
-                                    {{ $web->web_mandiri_an ?? '-' }}</span> )
-                                <br>
-                                *DANA/OVO/SHOPEPAY ( <span style="color: yellow;">{{ $web->web_ewallet ?? '-' }} AN.
-                                    {{ $web->web_ewallet_an ?? '-' }}</span> )
-                            </label>
+                        <label for="bukti_transfer" class="form-label">
+                            *BCA ( <span style="color: yellow;">{{ $web->web_bca ?? '-' }} AN.
+                                {{ $web->web_bca_an ?? '-' }}</span> )
                             <br>
+                            *BRI ( <span style="color: yellow;">{{ $web->web_bri ?? '-' }} AN.
+                                {{ $web->web_bri_an ?? '-' }}</span> )
+                            <br>
+                            *MANDIRI ( <span style="color: yellow;">{{ $web->web_mandiri ?? '-' }} AN.
+                                {{ $web->web_mandiri_an ?? '-' }}</span> )
+                            <br>
+                            *DANA/OVO/SHOPEPAY ( <span style="color: yellow;">{{ $web->web_ewallet ?? '-' }} AN.
+                                {{ $web->web_ewallet_an ?? '-' }}</span> )
+                        </label>
+                    </div>
+                    <div class="card-header justify-content-center">
+                        <form action="{{ route('upload.bukti_transfer', ['id' => $statusOrder->kode_inv]) }}"
+                            method="post" enctype="multipart/form-data" id="uploadForm">
+                            @csrf
                             <label for="bukti_transfer" class="form-label">Upload Bukti Transfer</label>
                             <div class="input-group mb-3">
                                 <input type="file" class="form-control" id="bukti_transfer" name="bukti_bayar"
-                                    accept="image/*" required>
+                                    accept=".jpg,.jpeg,.png" required>
                                 <button type="submit" id="btnUpload" class="btn btn-primary">Upload</button>
                             </div>
+                            <small class="text-muted">Format: JPG, JPEG, PNG. Maks: 2MB.</small>
                         </form>
                     </div>
                 @endif
@@ -252,7 +254,7 @@
                         <div class="d-flex">
                             @if ($statusOrder->bukti_bayar)
                                 <a href="{{ asset('storage/bukti_bayar/' . $statusOrder->bukti_bayar) }}" target="_blank"
-                                    class="btn btn-secondary me-3">Bukti Transfer</a>
+                                    class="btn btn-secondary me-3">Bukti</a>
                             @else
                                 <div class="d-flex justify-content-center align-items-center">
                                     <span class="badge bg-danger badge-sm me-3 mb-1 mt-1">Bukti Kosong</span>
@@ -353,18 +355,12 @@
     }
 
     function updateStatus() {
-        // Lakukan permintaan AJAX ke server untuk mendapatkan status terbaru
         $.ajax({
-            url: '{{ route('update.status', ['id' => $statusOrder->kode_inv]) }}', // Ganti dengan URL sesuai kebutuhan Anda
+            url: '{{ route('update.status', ['id' => $statusOrder->kode_inv]) }}',
             method: 'GET',
             success: function(response) {
-                // Ambil status dari respons server
                 var newStatus = document.querySelector('select[name="status"]').value;
-
-                // Cetak nilai status ke konsol untuk pemantauan
                 console.log("Current status:", newStatus);
-
-                // Memperbarui status badge
                 $('#statusBadge').removeClass().addClass('badge badge-sm me-1 mb-1 mt-1');
 
                 if (newStatus == 'Pending') {
@@ -382,4 +378,34 @@
             }
         });
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            const fileInput = document.getElementById('bukti_transfer');
+            const file = fileInput.files[0];
+
+            let alertMessage = null;
+            if (!file) {
+                alertMessage = "Silakan pilih file terlebih dahulu.";
+            } else if (file.size > 2 * 1024 * 1024) {
+                alertMessage =
+                    "Ukuran file terlalu besar! Silakan pilih file dengan ukuran maksimal 2MB.";
+            } else {
+                const allowedFormats = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!allowedFormats.includes(file.type)) {
+                    alertMessage =
+                        "Format file tidak valid! Silakan pilih file dengan format JPG, JPEG, atau PNG.";
+                }
+            }
+            if (alertMessage) {
+                swal({
+                    title: "Validasi Gagal",
+                    text: alertMessage,
+                    type: "warning",
+                    confirmButtonText: 'OK',
+                });
+                fileInput.value = '';
+                event.preventDefault();
+            }
+        });
+    });
 </script>
