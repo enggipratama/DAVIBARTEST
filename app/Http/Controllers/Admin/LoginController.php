@@ -9,6 +9,7 @@ use App\Models\Admin\WebModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -49,11 +50,12 @@ class LoginController extends Controller
         }
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
+        $request->session()->flush();
         Session::forget('user');
         Session::forget('user_role');
-
+        Auth::logout();
         //redirect to index
         return redirect(URL::previous());
     }

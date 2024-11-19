@@ -10,15 +10,10 @@ use App\Models\Admin\CustomerModel;
 use App\Models\Admin\JenisBarangModel;
 use App\Models\Admin\MerkModel;
 use App\Models\Admin\PesanModel;
-use App\Models\Admin\RoleModel;
 use App\Models\Admin\SatuanModel;
 use App\Models\Admin\UserModel;
 use App\Models\StatusOrderModel;
 use Illuminate\Http\Request;
-use App\Models\Admin\WebModel;
-use Illuminate\Support\Facades\Auth;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
 {
@@ -35,10 +30,16 @@ class DashboardController extends Controller
         $data["user"] = UserModel::leftJoin('tbl_role', 'tbl_role.role_id', '=', 'tbl_user.role_id')->select()->orderBy('user_id', 'DESC')->count();
         $data["userLogin"] = $request->session()->get('user');
 
+        // Cek apakah pengguna sudah login pertama kali
+       if (!$request->session()->has('firstLogin') && $data["userLogin"]) {
+           $request->session()->put('firstLogin', true); // Tandai sudah login
+           $data["firstLogin"] = true;  // Set status login pertama kali
+       } else {
+           $data["firstLogin"] = false;  // Jika sudah login sebelumnya
+       }
         $dataBarang = BarangModel::orderBy('created_at', 'desc')->paginate(8);
 
         $arr = [];
-
         foreach ($dataBarang as $dbarang) {
             $jmlmasuk = BarangmasukModel::leftJoin('tbl_barang', 'tbl_barang.barang_kode', '=', 'tbl_barangmasuk.barang_kode')->leftJoin('tbl_customer', 'tbl_customer.customer_id', '=', 'tbl_barangmasuk.customer_id')->where('tbl_barangmasuk.barang_kode', '=', $dbarang->barang_kode)->sum('tbl_barangmasuk.bm_jumlah');
     
@@ -65,7 +66,7 @@ class DashboardController extends Controller
             } else {
                 $totalreal = $totalstok - 0;
             }
-    
+            $terjual = $totalstok - $totalreal;
             $arr[] = [
                 'barang_id' => $dbarang->barang_id,
                 'gambar' => $dbarang->barang_gambar,
@@ -73,7 +74,8 @@ class DashboardController extends Controller
                 'harga' => $dbarang->barang_harga,
                 'satuan' => $dbarang->satuan->satuan_nama,
                 'total_stok' => $totalstok,
-                'total_real' => $totalreal
+                'total_real' => $totalreal,
+                'terjual' => $terjual
             ];
           
         }
@@ -93,6 +95,5 @@ class DashboardController extends Controller
         // dd($data);
         return view('Admin.Dashboard.index', ['data' => $data, 'arr' => $arr]);
     }
+    
 }
-
-        

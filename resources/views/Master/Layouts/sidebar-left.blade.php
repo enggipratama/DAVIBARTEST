@@ -165,6 +165,10 @@
                          href="#modalLogout"><i class="side-menu__icon fe fe-log-out"></i><span
                              class="side-menu__label">Log Out</span></a>
                  </li>
+                 <li class="slide">
+                     <p class="side-menu__item" ><i class="side-menu__icon fe fe-users"></i><span
+                             class="side-menu__label">Role : {{ Session::get('user')->role_title }}</span></p>
+                 </li>
 
 
              </ul>

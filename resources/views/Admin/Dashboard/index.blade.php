@@ -132,7 +132,61 @@
             @endif
         @endforeach
     </div>
-    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+    <div class="row">
+        <div class="card bg-warning img-card box-warning-shadow">
+            <div class="text-white">
+                <h1 class="page-title mt-4 mb-3 text-center">Produk Terlaris</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (collect($arr)->sortByDesc('terjual')->take(4) as $item)
+            <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3 d-flex align-items-center justify-content-center">
+                <div class="card bg-primary img-card" style="width: 13rem;">
+                    <span
+                        class="position-absolute top-0 start-50 translate-middle badge
+                        @if ($item['total_real'] <= 0) bg-danger
+                        @elseif($item['total_real'] < 100) bg-warning
+                        @elseif($item['total_real'] >= 100) bg-success @endif">
+                        @if ($item['total_real'] <= 0)
+                            Kosong
+                        @elseif($item['total_real'] > 200)
+                            200+ {{ $item['satuan'] }}
+                        @else
+                            {{ $item['total_real'] }} {{ $item['satuan'] }}
+                        @endif
+                    </span>
+
+                    <div class="card-body text-center" style="width: 12rem; height: 12rem; overflow: hidden;">
+                        @if ($item['gambar'] == 'image.png')
+                            <img src="{{ url('/assets/default/barang/image.png') }}"
+                                class="w-100 h-100 img-fluid rounded-3" alt="produk" style="object-fit: cover;">
+                        @else
+                            <img src="{{ asset('storage/barang/' . $item['gambar']) }}"
+                                class="w-100 h-100 img-fluid rounded-3" alt="produk" style="object-fit: cover;">
+                        @endif
+                    </div>
+                    <small class="text-white badge bg-dark">
+                        <small>Terjual</small> <strong style="font-size: larger;">
+                            {{ $item['total_stok'] - $item['total_real'] }} {{ $item['satuan'] }}</strong>
+                    </small>
+                    <div class="card-body text-center" style="max-width: 200px;">
+                        <h5 class="text-white clamp-two-lines">
+                            <b>{{ $item['nama'] }}</b>
+                        </h5>
+                        <small class="text-white" style="font-size: larger">
+                            <small>Rp</small> <strong
+                                style="font-size: larger;">{{ number_format($item['harga'], 0, ',', '.') }}</strong>
+                        </small>
+                        <div class="col-lg-12 mt-3">
+                            <a href="{{ url('admin/pesan') }}" class="btn btn-success">PESAN</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+    <div class="row">
         <div class="card bg-success img-card box-success-shadow">
             <div class="text-white">
                 <h1 class="page-title mt-4 mb-3 text-center">Produk Terbaru</h1>
@@ -167,14 +221,16 @@
                         @endif
                     </div>
                     <small class="text-white badge bg-dark">
-                        <small>Terjual</small> <strong style="font-size: larger;"> {{ $item['total_stok'] - $item['total_real'] }} {{ $item['satuan'] }}</strong>
+                        <small>Terjual</small> <strong style="font-size: larger;">
+                            {{ $item['terjual'] }} {{ $item['satuan'] }}</strong>
                     </small>
                     <div class="card-body text-center" style="max-width: 200px;">
                         <h5 class="text-white clamp-two-lines">
                             <b>{{ $item['nama'] }}</b>
-                        </h5>                                           
+                        </h5>
                         <small class="text-white" style="font-size: larger">
-                            <small>Rp</small> <strong style="font-size: larger;">{{ number_format($item['harga'], 0, ',', '.') }}</strong>
+                            <small>Rp</small> <strong
+                                style="font-size: larger;">{{ number_format($item['harga'], 0, ',', '.') }}</strong>
                         </small>
                         <div class="col-lg-12 mt-3">
                             <a href="{{ url('admin/pesan') }}" class="btn btn-success">PESAN</a>
@@ -201,3 +257,18 @@
         align-items: center;
     }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @if ($data['firstLogin'])  <!-- Cek apakah ini login pertama -->
+            const userRole = "{{ $data['userLogin']->role_title }}"; // Ambil role dari session
+            const userName = "{{ $data['userLogin']->user_nmlengkap }}"; // Ambil nama lengkap
+
+            swal({
+                title: "Login Sebagai " + userRole + " !",
+                text: "Selamat Datang " + userName,
+                icon: "success",
+                button: "OK",
+            });
+        @endif
+    });
+</script>
