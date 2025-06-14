@@ -16,6 +16,7 @@
                 <h4 class="fw-bold mt-4 text-black text-uppercase text-truncate">
                     {{ $web?->web_nama ?? 'Nama Website' }} <span class="text-gray">| LOGIN</span>
                 </h4>
+                <span class="fw-bold text-gray">Version {{ $web?->web_version ?? '1.0.0' }}</span>
             </div>
 
             <form class="login100-form validate-form" method="POST" name="myForm" action="{{ url('admin/proseslogin') }}"
@@ -51,6 +52,9 @@
                                     <button type="submit" class="login100-form-btn btn btn-primary"
                                         id="btnLogin">Login</button>
                                 </div>
+                            </div>
+                            <div class="text-center mt-2">
+                                <p class="text-gray">Username : <span class="fw-bold">owner</span> <br> Password : <span class="fw-bold">12345678</span></p>
                             </div>
                         </div>
                     </div>
