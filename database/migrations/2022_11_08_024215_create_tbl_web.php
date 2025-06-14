@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('web_nama');
             $table->string('web_logo');
             $table->string('web_alamat');
-            $table->string('web_tlp');
+            $table->string('web_tlpn');
             $table->string('web_deskripsi')->nullable();
             $table->timestamps();
         });

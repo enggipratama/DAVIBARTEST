@@ -13,19 +13,24 @@ $web = WebModel::first();
     <meta charset="UTF-8">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="{{ $web->web_deskripsi }}">
-    <meta name="author" content="{{ $web->web_nama }}">
+    <meta name="description" content="{{ $web?->web_deskripsi ?? 'Deskripsi website default' }}">
+    <meta name="author" content="{{$web?->web_nama ?? 'Nama website default'}}">
     <meta name="keywords" content="">
 
     <!-- FAVICON -->
-    @if ($web->web_logo == '' || $web->web_logo == 'default.png')
+    @php
+        $logo = $web?->web_logo ?? 'default.png';
+        $isDefault = $logo === '' || $logo === 'default.png';
+    @endphp
+
+    @if($isDefault)
         <link rel="shortcut icon" type="image/x-icon" href="{{ url('/assets/default/web/default.png') }}" />
     @else
-        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/web/' . $web->web_logo) }}" />
+        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/web/' . $logo) }}" />
     @endif
 
     <!-- TITLE -->
-    <title>404 Error | {{ $web->web_nama }}</title>
+    <title>404 Error | {{ $web->web_nama ?? 'Nama Website' }}</title>
 
     <!-- STYLE CSS -->
     <link href="{{ url('/assets/css/style.css') }}" rel="stylesheet" />
