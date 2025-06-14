@@ -112,50 +112,7 @@ class PesanController extends Controller
             ]);
         }
 
-        // Kirim notifikasi Discord
-        $webhookUrl = 'https://discord.com/api/webhooks/1219613056418447461/hjopw4sbw1Y8FBWB5ONi962PI3U9Im9rHFHusoJ73KMo0hjLFkWNw6nfgZj4M3qrfwMZ';
-        $pesan = "Kode Pesanan: `` " . $transaksi->kode_inv . " ``";
 
-        $orderData = $this->getOrderData($transaksi);
-        $response = Http::post($webhookUrl, [
-            'embeds' => [
-                [
-                    'title' => 'Pesanan Baru!',
-                    'description' => $pesan,
-                    'color' => 3447003,
-                    'fields' => [
-                        [
-                            'name' => 'Pelanggan',
-                            'value' => $orderData['namauser'],
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Total Harga',
-                            'value' => 'Rp. ' . number_format($orderData['total_harga'] - $orderData['diskon'], 0),
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Diskon',
-                            'value' => 'Rp. -' . number_format($orderData['diskon'], 0),
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Alamat',
-                            'value' => $orderData['alamat'],
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Detail Pesanan',
-                            'value' => '[Lihat Detail](' . url('/admin/pesan/detail/' . $orderData['kode_pesan']) . ')',
-                            'inline' => true,
-                        ],
-                    ],
-                    'footer' => [
-                        'text' => 'Tanggal Pesan: ' . $orderData['date_pesan'],
-                    ],
-                ],
-            ],
-        ]);
         return response()->json(['success' => true, 'message' => 'Berhasil']);
     }
 
@@ -209,7 +166,7 @@ class PesanController extends Controller
         $userInfo = $this->getUserInfo($statusOrder->id_user);
         $items = $this->getItems($statusOrder->id);
 
-        return view('Admin.Pesan.detail', compact('data','web', 'statusOrder', 'userInfo', 'items'));
+        return view('Admin.Pesan.detail', compact('data', 'web', 'statusOrder', 'userInfo', 'items'));
     }
 
     public function updateStatus(Request $request, $id)
@@ -230,58 +187,7 @@ class PesanController extends Controller
             'status_tanggal' => now(),
         ]);
         $orderData = $this->getOrderData($result);
-        // Kirim notifikasi Discord baru
-        $webhookUrl = 'https://discord.com/api/webhooks/1219613320068206592/f26jRHfIa04GPYcLGGlJ70zGd3pyOOvp1Unl45_mScNeWL4v2gFfN34cW6HV_KYyMeCz';
-        $pesan = "Kode Pesanan: `` " . $result->kode_inv . " ``";
-        $response = Http::post($webhookUrl, [
-            'embeds' => [
-                [
-                    'title' => 'Update Status!',
-                    'description' => $pesan,
-                    'color' => 3447003,
-                    'fields' => [
-                        [
-                            'name' => 'Pelanggan',
-                            'value' => $orderData['namauser'],
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Total Harga',
-                            'value' => 'Rp. ' . number_format($orderData['total_harga'] - $orderData['diskon'], 0),
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Diskon',
-                            'value' => 'Rp. -' . number_format($orderData['diskon'], 0),
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Alamat',
-                            'value' => $orderData['alamat'],
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Diubah Oleh',
-                            'value' => Session::get('user')->user_nmlengkap,
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Status',
-                            'value' => "`` ".$newStatus." ``",
-                            'inline' => true,
-                        ],
-                        [
-                            'name' => 'Detail Pesanan',
-                            'value' => '[Lihat Detail](' . url('/admin/pesan/detail/' . $orderData['kode_pesan']) . ')',
-                            'inline' => true,
-                        ],
-                    ],
-                    'footer' => [
-                        'text' => 'Tanggal Pesan: ' . $orderData['date_pesan'],
-                    ],
-                ],
-            ],
-        ]);
+
         return response()->json(['message' => 'Status berhasil diperbarui']);
     }
 
@@ -325,7 +231,8 @@ class PesanController extends Controller
             ->get();
     }
 
-    private function getWeb($web_id) {
+    private function getWeb($web_id)
+    {
         return DB::table('tbl_web')->where('web_id', $web_id)->first();
     }
 
@@ -375,32 +282,32 @@ class PesanController extends Controller
         ];
     }
     public function uploadBuktiTransfer(Request $request, $id)
-{
-    $request->validate([
-        'bukti_bayar' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
-
-    $order = $this->getStatusOrder($id);
-    if (!$order) {
-        return redirect()->back()->with('error', 'Pesanan tidak ditemukan.');
-    }
-
-    if ($request->hasFile('bukti_bayar')) {
-        $file = $request->file('bukti_bayar');
-        $fileName = "bukti-bayar-" . hash('sha256', time()) . '.' . $file->getClientOriginalExtension();
-        $filePath = $file->storeAs('public/bukti_bayar', $fileName);
-        if ($order->bukti_bayar) {
-            Storage::delete('public/bukti_bayar/' . $order->bukti_bayar);
-        }
-        $update = StatusOrderModel::where('id', $order->id);
-
-        $update->update([
-            'bukti_bayar' => $fileName
+    {
+        $request->validate([
+            'bukti_bayar' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-    }
 
-    // Redirect dengan pesan sukses
-    return redirect()->back()->with('success', 'Bukti transfer berhasil diupload.');
-}
+        $order = $this->getStatusOrder($id);
+        if (!$order) {
+            return redirect()->back()->with('error', 'Pesanan tidak ditemukan.');
+        }
+
+        if ($request->hasFile('bukti_bayar')) {
+            $file = $request->file('bukti_bayar');
+            $fileName = "bukti-bayar-" . hash('sha256', time()) . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('public/bukti_bayar', $fileName);
+            if ($order->bukti_bayar) {
+                Storage::delete('public/bukti_bayar/' . $order->bukti_bayar);
+            }
+            $update = StatusOrderModel::where('id', $order->id);
+
+            $update->update([
+                'bukti_bayar' => $fileName
+            ]);
+        }
+
+        // Redirect dengan pesan sukses
+        return redirect()->back()->with('success', 'Bukti transfer berhasil diupload.');
+    }
 
 }

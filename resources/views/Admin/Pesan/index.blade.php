@@ -47,7 +47,7 @@
                                             <div class="d-flex justify-content-center">
                                                 <span
                                                     class="badge @if ($product['total_real'] <= 0) bg-danger
-                                                        @elseif($product['total_real'] < 100) bg-success 
+                                                        @elseif($product['total_real'] < 100) bg-success
                                                         @else bg-info @endif badge-sm  me-1 mb-1 mt-1">
                                                     @if ($product['total_real'] <= 0)
                                                         Stok Kosong
@@ -197,8 +197,8 @@
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Loading..
                     </button>
-                    <a href="javascript:void(0)" onclick="check()" id="btnSimpanU" class="btn btn-primary">Checkout
-                    </a>
+<button type="button" onclick="check()" id="btnSimpanU" class="btn btn-primary">Checkout</button>
+
                 </div>
             </div>
         </div>
@@ -302,6 +302,7 @@
             }
 
             function check() {
+                console.log("CHECK DIPANGGIL");
                 setLoadingH(true);
                 var cartItems = $("#rincian-order-table tbody#cart-items tr").map(function() {
                     var rowData = $(this).find('td').map(function() {
@@ -320,6 +321,7 @@
             }
 
             function confirmCheckout() {
+                console.log("KONFIRMASI CHECKOUT");
                 swal({
                     title: "Pesan Sekarang?",
                     type: "warning",
@@ -336,6 +338,7 @@
             }
 
             function addToPesan() {
+                console.log("ADD TO PESAN DIPANGGIL");
                 var diskonInput = document.getElementById('diskon');
                 var metode_bayar = document.getElementById('metode_bayar').value;
                 var diskon = diskonInput ? parseInt(diskonInput.value, 10) : 0;
@@ -344,7 +347,7 @@
                 }, 0);
                 var selisih = totalHarga - diskon;
                 if (selisih < 0) {
-                    diskon = diskon + selisih; 
+                    diskon = diskon + selisih;
                 }
 
                 const tableData = [];
@@ -357,8 +360,8 @@
 
                 fd.append('_token', '{{ csrf_token() }}');
                 fd.append('data', tableData);
-                fd.append('diskon', diskon); 
-                fd.append('metode_bayar', metode_bayar); 
+                fd.append('diskon', diskon);
+                fd.append('metode_bayar', metode_bayar);
 
                 $.ajax({
                     type: 'POST',
@@ -382,12 +385,14 @@
                 $('#btnSimpanU').toggleClass('d-none', bool);
             }
 
-            function validasi(message, type) {
-                swal({
-                    title: "Item Order Kosong",
-                    type: "warning"
-                });
-            }
+            function validasi(message = "Item Order Kosong", type = "warning") {
+    swal({
+        title: message,
+        type: type
+    }, function () {
+        setLoadingH(false); // ⬅️ Dipanggil setelah swal ditutup
+    });
+}
 
             function updateTotalHarga() {
                 var diskonInput = document.getElementById('diskon');
